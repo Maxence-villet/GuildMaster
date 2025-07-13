@@ -1,21 +1,29 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPowerOff, faBars, faTachometerAlt, faUserGear, faPlus} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from 'react-router-dom'; // Importer useNavigate
 
 // Navigation items (except logout)
 const navItems = [
-  { href: "/guide/list", icon: faTachometerAlt, label: "All Guides" },
-  { href: "/guide/add", icon: faPlus, label: "Add Guide" },
-  { href: "/member/list", icon: faUserGear, label: "Manage members" },
+  { path: "/guide/list", icon: faTachometerAlt, label: "All Guides" }, // Changement de 'href' à 'path'
+  { path: "/guide/add", icon: faPlus, label: "Add Guide" },
+  { path: "/member/list", icon: faUserGear, label: "Manage members" },
 ];
 
 export default function Header() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate(); // Initialiser useNavigate
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
     if (window.innerWidth >= 1279) setMenuOpen(false); // Close menu on desktop
+  };
+
+  const handleLogout = () => {
+    // Ici, vous mettriez votre logique de déconnexion (par exemple, appel API, nettoyage du contexte d'authentification)
+    console.log("Déconnexion..."); // Placeholder pour la logique de déconnexion
+    navigate('/logout'); // Naviguer vers la page de déconnexion ou de connexion après la déconnexion
   };
 
   useEffect(() => {
@@ -31,9 +39,14 @@ export default function Header() {
           <h1 className="text-2xl font-bold">VA5 Family</h1>
         </div>
         <div className="flex items-center">
-          <a href="/logout" className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2">
+          {/* Utilisation d'un bouton pour la déconnexion */}
+          <button 
+            onClick={handleLogout} 
+            className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
+            aria-label="Logout"
+          >
             <FontAwesomeIcon icon={faPowerOff} />
-          </a>
+          </button>
         </div>
       </header>
 
@@ -50,9 +63,14 @@ export default function Header() {
           <h1 className="text-2xl font-bold ml-4">VA5 Family</h1>
         </div>
         <div className="flex items-center">
-          <a href="/logout" className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2">
+          {/* Utilisation d'un bouton pour la déconnexion */}
+          <button 
+            onClick={handleLogout} 
+            className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
+            aria-label="Logout"
+          >
             <FontAwesomeIcon icon={faPowerOff} />
-          </a>
+          </button>
         </div>
         {/* Dropdown menu */}
         {menuOpen && (
@@ -77,15 +95,18 @@ export default function Header() {
             </button>
             <ul className="flex flex-col space-y-2">
               {navItems.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2"
-                    onClick={() => setMenuOpen(false)}
+                <li key={item.path}> {/* Utilisation de 'item.path' pour la clé */}
+                  {/* Utilisation d'un div cliquable pour la navigation */}
+                  <div
+                    onClick={() => {
+                      navigate(item.path); // Naviguer vers le chemin spécifié
+                      setMenuOpen(false); // Fermer le menu après la navigation
+                    }}
+                    className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
                   >
                     <FontAwesomeIcon icon={item.icon} />
                     <span>{item.label}</span>
-                  </a>
+                  </div>
                 </li>
               ))}
             </ul>

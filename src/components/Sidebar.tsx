@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListUl, faPlus, faUsersGear,  faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faListUl, faPlus, faUsersGear, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from '../context/AuthContext'; 
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {
-
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isDesktop, setIsDesktop] = useState(windowWidth > 1279);
+    const { user, logout } = useAuth(); 
+    const navigate = useNavigate();
 
     const handleResize = () => {
         setWindowWidth(window.innerWidth);
         setIsDesktop(window.innerWidth > 1279);
+    };
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
     };
 
     useEffect(() => {
@@ -22,41 +30,50 @@ export default function Sidebar() {
             <div className="flex flex-col space-x-3 mb-6">
                 <div>
                     <h2 className="text-lg font-semibold text-gray-800">
-                        Cris
+                        {user ? user.name : 'Guest'}
                     </h2>
                     <p className="text-sm text-gray-500">
-                        Leader
+                        {user ? user.role : 'N/A'}
                     </p>
                 </div>
                 <nav className="mt-8">
                     <ul className="space-y-2 flex flex-col">
                         <li>
-                            <a href="/guide/list" className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2">
+                            <div 
+                                onClick={() => navigate('/guide/list')} 
+                                className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
+                            >
                                 <FontAwesomeIcon icon={faListUl} />
                                 <span>All guides</span>
-                            </a>
+                            </div>
                         </li>
                         <li>
-                            <a href="/guide/add" className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2">
+                            <div 
+                                onClick={() => navigate('/guide/add')} 
+                                className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
+                            >
                                 <FontAwesomeIcon icon={faPlus} />
                                 <span>Add guide</span>
-                            </a>
+                            </div>
                         </li>
                         <li>
-                            <a href="/member/list" className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2">
+                            <div 
+                                onClick={() => navigate('/member/list')} 
+                                className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
+                            >
                                 <FontAwesomeIcon icon={faUsersGear} />
                                 <span>Manage member</span>
-                            </a>
+                            </div>
                         </li>
                         <li>
-                            <a href="/logout" className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2">
+                            <button onClick={handleLogout} className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 w-full text-left">
                                 <FontAwesomeIcon icon={faSignOutAlt} />
                                 <span>Logout</span>
-                            </a>
+                            </button>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
-    )
+    );
 }

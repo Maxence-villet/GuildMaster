@@ -74,5 +74,27 @@ export const createMembersRouter = (dbConnection: mysql.Connection) => {
         }
     });
 
+    router.post('/', async (req: Request, res: Response) => {
+        const { name, code } = req.body;
+
+        if (!name || !code) {
+            return res.status(400).json({ message: 'Name and code are required.' });
+        }
+
+        try {
+            const query = 'SELECT id, name, code, role, created_at FROM Members WHERE name = ? AND code = ?';
+            const [rows] = await dbConnection.execute(query, [name, code]);
+
+            if (Array.isArray(rows) && rows.length > 0) {
+                res.json(rows[0]);
+            } else {
+                res.status(404).json({ message: 'Member not found or credentials do not match.' });
+            }
+        } catch (error) {
+            console.error('Error checking member credentials:', error);
+            res.status(500).json({ message: 'Server error while checking member credentials.' });
+        }
+    });
+
     return router;
 };

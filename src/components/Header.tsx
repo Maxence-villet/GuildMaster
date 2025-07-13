@@ -2,34 +2,56 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPowerOff, faBars, faTachometerAlt, faUserGear, faPlus} from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from 'react-router-dom'; // Importer useNavigate
+import { useAuth } from '../context/AuthContext'; // Importer useAuth
 
-// Navigation items (except logout)
-const navItems = [
-  { path: "/guide/list", icon: faTachometerAlt, label: "All Guides" }, // Changement de 'href' à 'path'
-  { path: "/guide/add", icon: faPlus, label: "Add Guide" },
-  { path: "/member/list", icon: faUserGear, label: "Manage members" },
-];
+
+
+
 
 export default function Header() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate(); // Initialiser useNavigate
+  const { user, logout } = useAuth();
+
+    useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+      useEffect(() => {
+        if (!user) {
+        navigate("/login");
+        }
+    }, [user, navigate]);
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
     if (window.innerWidth >= 1279) setMenuOpen(false); // Close menu on desktop
   };
 
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
+
+  const navItems = [
+    { path: "/guide/list", icon: faTachometerAlt, label: "All Guides" },
+  ];
+
+  if(user.role === "Leader") {
+    navItems.push({ path: "/guide/add", icon: faPlus, label: "Add Guide" });
+    navItems.push({ path: "/member/list", icon: faUserGear, label: "Manage members"})
+  }
+
+
   const handleLogout = () => {
-    // Ici, vous mettriez votre logique de déconnexion (par exemple, appel API, nettoyage du contexte d'authentification)
-    console.log("Déconnexion..."); // Placeholder pour la logique de déconnexion
-    navigate('/logout'); // Naviguer vers la page de déconnexion ou de connexion après la déconnexion
+    console.log("Déconnexion...");
+    logout();
+    navigate('/login');
   };
 
-  useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+
 
   return (
     <>

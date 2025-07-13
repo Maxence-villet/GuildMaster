@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddGuide() {
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
-  // In a real application, authorId would likely come from user authentication context
-  const authorId = 1; 
+   const { user } = useAuth();
 
+  const navigate = useNavigate();
   const API_URL = 'http://localhost:3001/api/guide/add';
 
   const handleAddGuide = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (!user) {
+      navigate("/login");
+      return;
+    }
 
     if (!title.trim() || !text.trim()) {
       toast.error('Title and text cannot be empty.');
@@ -19,7 +26,7 @@ export default function AddGuide() {
     }
 
     try {
-      const response = await axios.post(API_URL, { title, author_id: authorId, text });
+      const response = await axios.post(API_URL, { title, author_id: user.id, text });
       toast.success('Guide added successfully!');
       setTitle('');
       setText('');

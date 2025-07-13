@@ -5,11 +5,14 @@ import { faList, faPlus } from "@fortawesome/free-solid-svg-icons";
 import ListTable from "../../../components/Guides/ListTable";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../../context/AuthContext'; 
 
 export default function ListGuidePage() {
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isDesktop, setIsDesktop] = useState(windowWidth > 1279);
+    const { user } = useAuth();
+    
 
     const handleResize = () => {
         setWindowWidth(window.innerWidth);
@@ -29,6 +32,13 @@ export default function ListGuidePage() {
     }
 
 
+
+    if (!user) {
+        navigate("/login");
+        return null;
+    }
+
+
     return (
         <div className="flex flex-col h-screen w-full">
             <Header />
@@ -42,12 +52,15 @@ export default function ListGuidePage() {
                             <FontAwesomeIcon icon={faList} className="text-blue-600" />
                             <span>List of Guides</span>
                         </h2>
+                        {user.role === "Leader" && (
+                       
                         <div className="flex items-center gap-2 w-full justify-end mt-2 xl:mt-0">
                             <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out flex items-center gap-2 w-auto" onClick={handleClick}>
                                 <FontAwesomeIcon icon={faPlus} />
                                 <span>Add guide</span>
                             </button>
                         </div>
+                    )}
                     </div>
                     <div className="w-full mt-4">
                         <ListTable />

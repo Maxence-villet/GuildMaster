@@ -1,6 +1,7 @@
 import AddGuidePage from "../crm/guide/add/page";
 import ListGuidePage from "../crm/guide/list/page";
 import LoginPage from "../crm/login/page";
+import ListMembersPage from "../crm/member/list/page";
 
 export const appRoutes = [
     {
@@ -11,10 +12,13 @@ export const appRoutes = [
         path: "/guide/add",
         element: <AddGuidePage />
     },
-    
     {
         path: "/guide/list",
         element: <ListGuidePage />
+    },
+    {
+        path: "/member/list",
+        element: <ListMembersPage />
     }
 
 ];

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPowerOff, faBars, faTachometerAlt, faUserGear, faPlus, faList, faChartBar, faBell, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faPowerOff, faBars, faTachometerAlt, faUserGear, faPlus} from "@fortawesome/free-solid-svg-icons";
 
 // Navigation items (except logout)
 const navItems = [

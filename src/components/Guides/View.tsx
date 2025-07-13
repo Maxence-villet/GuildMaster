@@ -1,34 +1,71 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface Guide {
   id: number;
   title: string;
-  author: string;
+  author_id: number;
+  authorName: string;
   text: string;
-  date: string;
+  created_at: string;
 }
 
 export default function ViewGuide() {
-  const guide: Guide = {
-    id: 1,
-    title: "Tips: Become 6th to 1st with bank system",
-    author: "Cris",
-    text: `Usually what I like to do is to wait for other clans to finish their clan raids, so we wait a bit. Then when the time is right we start clan raids stealing opportunity of others finishing their clan raids and not defending their bank, the amount depends on what place we are at. For example if we are at the top, 1st or 2nd place, we would have a lower amount of valor in our clan bank and we will have a higher risk of our valor from our clan bank being stolen. But if we are at the bottom, like 6th, 5th, or 4th place, we would have higher amount of valor in our clan bank and have a lower risk of our valor being stolen.
+  const { id } = useParams<{ id: string }>();
+  const [guide, setGuide] = useState<Guide | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-Usually what I like to do is to wait for other clans to finish their clan raids, so we wait a bit. Then when the time is right we start clan raids stealing opportunity of others finishing their clan raids and not defending their bank, the amount depends on what place we are at. For example if we are at the top, 1st or 2nd place, we would have a lower amount of valor in our clan bank and we will have a higher risk of our valor from our clan bank being stolen. But if we are at the bottom, like 6th, 5th, or 4th place, we would have higher amount of valor in our clan bank and have a lower risk of our valor being stolen.
+  const API_BASE_URL = 'http://localhost:3001/api/guide';
 
-Usually what I like to do is to wait for other clans to finish their clan raids, so we wait a bit. Then when the time is right we start clan raids stealing opportunity of others finishing their clan raids and not defending their bank, the amount depends on what place we are at. For example if we are at the top, 1st or 2nd place, we would have a lower amount of valor in our clan bank and we will have a higher risk of our valor from our clan bank being stolen. But if we are at the bottom, like 6th, 5th, or 4th place, we would have higher amount of valor in our clan bank and have a lower risk of our valor being stolen.`,
-    date: "01:58 PM CEST, July 13, 2025",
-  };
+  useEffect(() => {
+    const fetchGuide = async () => {
+      if (!id) {
+        setError("Guide ID is missing from URL.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const response = await axios.get<Guide>(`${API_BASE_URL}/${id}`);
+        setGuide(response.data);
+      } catch (err) {
+        if (axios.isAxiosError(err) && err.response) {
+          setError(err.response.data.message || "Failed to fetch guide.");
+        } else {
+          setError("An unexpected error occurred while fetching the guide.");
+        }
+        console.error("Error fetching guide:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGuide();
+  }, [id]);
+
+  if (loading) {
+    return <div className="bg-white p-6 rounded-lg shadow text-black">Loading guide...</div>;
+  }
+
+  if (error) {
+    return <div className="bg-white p-6 rounded-lg shadow text-red-500">Error: {error}</div>;
+  }
+
+  if (!guide) {
+    return <div className="bg-white p-6 rounded-lg shadow text-black">Guide not found.</div>;
+  }
 
   return (
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h1 className="text-2xl font-bold text-black mb-4">{guide.title}</h1>
-        <p className="text-gray-600 text-sm mb-2">By {guide.author}</p>
-        <p className="text-gray-600 text-sm mb-4">Posted on {guide.date}</p>
-        <div className="text-black leading-relaxed overflow-y-auto h-64">
-          {guide.text}
-        </div>
+    <div className="bg-white p-6 rounded-lg shadow">
+      <Toaster />
+      <h1 className="text-2xl font-bold text-black mb-4">{guide.title}</h1>
+      <p className="text-gray-600 text-sm mb-2">By {guide.authorName}</p>
+      <p className="text-gray-600 text-sm mb-4">Posted on {new Date(guide.created_at).toLocaleString()}</p>
+      <div className="text-black leading-relaxed overflow-y-auto h-64 whitespace-pre-wrap">
+        {guide.text}
       </div>
+    </div>
   );
 }

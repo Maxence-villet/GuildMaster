@@ -29,7 +29,7 @@ export const appRoutes = [
         element: <AddMemberPage />
     },
     {
-        path: "/guide/view",
+        path: "/guide/view/:id",
         element: <ViewGuidePage />
     }
 

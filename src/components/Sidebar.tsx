@@ -22,11 +22,9 @@ export default function Sidebar() {
 
     useEffect(() => {
         if (!user) {
-        navigate("/login");
-        
+            navigate("/login");
         }
     }, [user, navigate]);
-
 
     useEffect(() => {
         window.addEventListener("resize", handleResize);
@@ -37,16 +35,18 @@ export default function Sidebar() {
         navigate("/login");
         return null;
     }
+
+    const canManageMembers = ["Leader", "Lieutenant"].includes(user.role);
     
     return (
         <div className={`w-64 bg-white shadow-lg shadow-gray-300 h-screen p-4 ${isDesktop ? "block" : "hidden"}`}>
             <div className="flex flex-col space-x-3 mb-6">
                 <div>
                     <h2 className="text-lg font-semibold text-gray-800">
-                        {user ? user.name : ""}
+                        {user.name}
                     </h2>
                     <p className="text-sm text-gray-500">
-                        {user ? user.role : ""}
+                        {user.role}
                     </p>
                 </div>
                 <nav className="mt-8">
@@ -60,31 +60,33 @@ export default function Sidebar() {
                                 <span>All guides</span>
                             </div>
                         </li>
-                        
                         {user.role === "Leader" && (
-                        <>
-                        <li>
-                            <div 
-                                onClick={() => navigate('/guide/add')} 
-                                className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
-                            >
-                                <FontAwesomeIcon icon={faPlus} />
-                                <span>Add guide</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div 
-                                onClick={() => navigate('/member/list')} 
-                                className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
-                            >
-                                <FontAwesomeIcon icon={faUsersGear} />
-                                <span>Manage member</span>
-                            </div>
-                        </li>
-                        </>
+                            <li>
+                                <div 
+                                    onClick={() => navigate('/guide/add')} 
+                                    className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
+                                >
+                                    <FontAwesomeIcon icon={faPlus} />
+                                    <span>Add guide</span>
+                                </div>
+                            </li>
+                        )}
+                        {canManageMembers && (
+                            <li>
+                                <div 
+                                    onClick={() => navigate('/member/list')} 
+                                    className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
+                                >
+                                    <FontAwesomeIcon icon={faUsersGear} />
+                                    <span>Manage member</span>
+                                </div>
+                            </li>
                         )}
                         <li>
-                            <button onClick={handleLogout} className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 w-full text-left">
+                            <button 
+                                onClick={handleLogout} 
+                                className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 w-full text-left"
+                            >
                                 <FontAwesomeIcon icon={faSignOutAlt} />
                                 <span>Logout</span>
                             </button>

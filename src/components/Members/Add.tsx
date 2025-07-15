@@ -13,6 +13,7 @@ interface Member {
 
 export default function AddMember() {
   const [memberName, setMemberName] = useState('');
+  const [memberRole, setMemberRole] = useState('Member');
   const API_URL = 'http://localhost:3001/api/member/add';
 
   const handleAddMember = async () => {
@@ -20,11 +21,17 @@ export default function AddMember() {
       toast.error('Member name cannot be empty.');
       return;
     }
+    if (!memberRole.trim()) {
+      toast.error('Member role cannot be empty.');
+      return;
+    }
+
 
     try {
-      const response = await axios.post<Member>(API_URL, { name: memberName });
+      const response = await axios.post<Member>(API_URL, { name: memberName, role: memberRole });
       toast.success(`Member ${memberName} added successfully!`);
       setMemberName('');
+      setMemberRole('Member');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         toast.error(`Error: ${error.response.data.message || 'Something went wrong.'}`);
@@ -46,12 +53,23 @@ export default function AddMember() {
           value={memberName}
           onChange={(e) => setMemberName(e.target.value)}
         />
+        <div className='flex items-center gap-2'>
+        <select
+          className="flex-1 p-2 border rounded bg-white text-black py-2"
+          value={memberRole}
+          onChange={(e) => setMemberRole(e.target.value)}
+        >
+          <option value="Member">Member</option>
+          <option value="Lieutenant">Lieutenant</option>
+          <option value="Leader">Leader</option>
+        </select>
         <button
           className="ml-auto w-[150] px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           onClick={handleAddMember}
         >
           Add Member
         </button>
+        </div>
       </div>
     </div>
   );

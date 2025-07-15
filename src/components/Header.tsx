@@ -44,9 +44,12 @@ export default function Header() {
     navItems.push({ path: "/member/list", icon: faUserGear, label: "Manage members"})
   }
 
+  if(user.role === "Lieutenant") {
+    navItems.push({ path: "/member/list", icon: faUserGear, label: "Manage members"})
+  }
+
 
   const handleLogout = () => {
-    console.log("Déconnexion...");
     logout();
     navigate('/login');
   };

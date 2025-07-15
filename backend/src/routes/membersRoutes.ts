@@ -1,6 +1,6 @@
 // src/routes/membersRoutes.ts
 import { Router, Request, Response } from 'express';
-import mysql from 'mysql2/promise';
+import mysql, { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 import crypto from 'crypto';
 
 export const createMembersRouter = (dbConnection: mysql.Connection) => {
@@ -18,19 +18,53 @@ export const createMembersRouter = (dbConnection: mysql.Connection) => {
     });
 
     router.post('/add', async (req: Request, res: Response) => {
-        const { name } = req.body;
+        const { name, role } = req.body;
 
         if (!name) {
             return res.status(400).json({ message: 'Member name is required.' });
         }
 
+        if (!role) {
+            return res.status(400).json({ message: 'Member role is required.' });
+        }
+
         try {
-            const role = 'member';
+            // Check total members
+            const [totalCountResult] = await dbConnection.execute<RowDataPacket[]>('SELECT COUNT(*) as count FROM Members');
+            const totalCount = totalCountResult[0].count;
+            if (totalCount >= 50) {
+                return res.status(400).json({ message: 'Cannot add member: Maximum of 50 members reached.' });
+            }
+
+            // Check Lieutenant count if role is Lieutenant
+            if (role === 'Lieutenant') {
+                const [lieutenantCountResult] = await dbConnection.execute<RowDataPacket[]>(
+                    'SELECT COUNT(*) as count FROM Members WHERE role = ?',
+                    ['Lieutenant']
+                );
+                const lieutenantCount = lieutenantCountResult[0].count;
+                if (lieutenantCount >= 4) {
+                    return res.status(400).json({ message: 'Cannot add Lieutenant: Maximum of 4 Lieutenants reached.' });
+                }
+            }
+
+            // Check Leader count if role is Leader
+            if (role === 'Leader') {
+                const [leaderCountResult] = await dbConnection.execute<RowDataPacket[]>(
+                    'SELECT COUNT(*) as count FROM Members WHERE role = ?',
+                    ['Leader']
+                );
+                const leaderCount = leaderCountResult[0].count;
+                if (leaderCount >= 1) {
+                    return res.status(400).json({ message: 'Cannot add Leader: Maximum of 1 Leader reached.' });
+                }
+            }
+
             const randomString = Math.random().toString(36) + Date.now();
             const code = crypto.createHash('sha1').update(randomString).digest('hex');
 
             const query = 'INSERT INTO Members (name, code, role) VALUES (?, ?, ?)';
-            const [result] = await dbConnection.execute(query, [name, code, role]);
+            const [result] = await dbConnection.execute<ResultSetHeader>(query, [name, code, role]);
 
             if ('insertId' in result) {
                 res.status(201).json({

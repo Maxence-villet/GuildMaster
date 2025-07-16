@@ -4,6 +4,7 @@ import mysql from 'mysql2/promise'; // Utiliser 'mysql2/promise' pour les promes
 import { createMembersRouter } from './routes/membersRoutes';
 import { createGuidesRouter } from './routes/guidesRoutes';
 import cors from 'cors';
+import { createClansRouter } from './routes/clansRoutes';
 
 const app = express();
 const port = 3001;
@@ -43,9 +44,11 @@ async function startServer() {
         // Création et montage des routeurs
         const membersRouter = createMembersRouter(dbConnection);
         const guidesRouter = createGuidesRouter(dbConnection);
+        const clansRouter = createClansRouter(dbConnection);
 
         app.use('/api/member', membersRouter);
         app.use('/api/guide', guidesRouter);
+        app.use('/api/clan', clansRouter);
 
         // Démarrage du serveur
         app.listen(port, () => {

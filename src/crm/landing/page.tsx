@@ -37,7 +37,7 @@ export default function LandingPage() {
       <header className="bg-white shadow-lg p-6 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center space-x-3">
           <FontAwesomeIcon icon={faBook} className="text-blue-600 text-3xl" />
-          <h1 className="text-3xl font-extrabold tracking-tight">Pixel Gun 3D Clan Guide</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">GuildMaster</h1>
         </div>
         <button
           onClick={() => navigate('/login')}
@@ -54,10 +54,10 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-opacity-10 bg-black opacity-20"></div>
           <div className="relative z-10">
             <h2 className="text-4xl font-bold mb-6 tracking-tight animate-fade-in">
-              Welcome to the Pixel Gun 3D Clan Guide
+              Welcome to the GuildMaster
             </h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
-              Your ultimate resource for mastering <strong>Pixel Gun 3D</strong> with exclusive tips and strategies tailored for our clan members.
+              Your ultimate resource for managing your clan with exclusive tips and strategies tailored for our clan members.
             </p>
             <div className="flex justify-center">
               <button
@@ -99,7 +99,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-white shadow-lg p-6 text-center">
-        <p className="text-sm text-gray-600">© 2025 Pixel Gun 3D Clan Guide - All Rights Reserved</p>
+        <p className="text-sm text-gray-600">© 2025 GuildMaster - All Rights Reserved</p>
         <p className="text-sm text-gray-600 flex items-center justify-center mt-2">
           <FontAwesomeIcon icon={faUsers} className="text-blue-600 mr-2" />
           Exclusive for Clan Members

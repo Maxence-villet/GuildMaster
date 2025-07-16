@@ -24,7 +24,7 @@ export const createMembersRouter = (dbConnection: mysql.Connection) => {
     });
 
     router.post('/add', async (req: Request, res: Response) => {
-        const { name, role, clan_id } = req.body;
+        const { name, role, clan_id, code: customCode } = req.body;
 
         if (!name) {
             return res.status(400).json({ message: 'Member name is required.' });
@@ -76,8 +76,26 @@ export const createMembersRouter = (dbConnection: mysql.Connection) => {
                 }
             }
 
-            const randomString = Math.random().toString(36) + Date.now();
-            const code = crypto.createHash('sha1').update(randomString).digest('hex');
+            // Generate or use custom code
+            let code: string;
+            if (customCode && customCode.trim()) {
+                // Use custom code if provided
+                code = customCode.trim();
+                
+                // Check if code already exists
+                const [existingCode] = await dbConnection.execute<RowDataPacket[]>(
+                    'SELECT id FROM Members WHERE code = ?',
+                    [code]
+                );
+                
+                if (existingCode.length > 0) {
+                    return res.status(400).json({ message: 'Code already exists. Please choose a different code.' });
+                }
+            } else {
+                // Generate random code if no custom code provided
+                const randomString = Math.random().toString(36) + Date.now();
+                code = crypto.createHash('sha1').update(randomString).digest('hex');
+            }
 
             const query = 'INSERT INTO Members (name, code, role, clan_id) VALUES (?, ?, ?, ?)';
             const [result] = await dbConnection.execute<ResultSetHeader>(query, [name, code, role, clan_id]);
@@ -104,29 +122,14 @@ export const createMembersRouter = (dbConnection: mysql.Connection) => {
 
     router.delete('/delete/:id', async (req: Request, res: Response) => {
         const { id } = req.params;
-        const { clan_id } = req.query;
 
         if (!id) {
             return res.status(400).json({ message: 'Member ID is required.' });
         }
 
-        if (!clan_id) {
-            return res.status(400).json({ message: 'Clan ID is required.' });
-        }
-
         try {
-            // First check if the member belongs to the specified clan
-            const [memberCheck] = await dbConnection.execute<RowDataPacket[]>(
-                'SELECT id FROM Members WHERE id = ? AND clan_id = ?',
-                [id, clan_id]
-            );
-
-            if (memberCheck.length === 0) {
-                return res.status(404).json({ message: 'Member not found in this clan.' });
-            }
-
-            const query = 'DELETE FROM Members WHERE id = ? AND clan_id = ?';
-            const [result] = await dbConnection.execute(query, [id, clan_id]);
+            const query = 'DELETE FROM Members WHERE id = ?';
+            const [result] = await dbConnection.execute(query, [id]);
 
             if ('affectedRows' in result && result.affectedRows === 0) {
                 return res.status(404).json({ message: 'Member not found.' });

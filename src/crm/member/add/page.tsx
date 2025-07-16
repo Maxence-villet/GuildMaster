@@ -89,7 +89,7 @@ export default function AddMemberPage() {
             await axios.post<Member>(`${API_URL}/add`, { 
                 name: memberName, 
                 role: memberRole, 
-                clan_id: user.clan_id 
+                clan_id: user.clan_id
             });
             toast.success(`Member ${memberName} added successfully!`);
             setMemberName('');

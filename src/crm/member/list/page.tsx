@@ -8,12 +8,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../../context/AuthContext';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
+import { getAvailableRoles } from '../../../utils/memberRoles';
 
 interface Member {
   id: number;
   name: string;
   code: string;
   role: 'Member' | 'Lieutenant' | 'Leader';
+  clan_id: number;
 }
 
 export default function ListMembersPage() {
@@ -45,8 +47,14 @@ export default function ListMembersPage() {
     }, [user, navigate]);
 
     const fetchMembers = async () => {
+        if (!user?.clan_id) {
+            setError("User clan not found.");
+            setLoading(false);
+            return;
+        }
+
         try {
-            const response = await axios.get(`${API_BASE_URL}/list`);
+            const response = await axios.get(`${API_BASE_URL}/list?clan_id=${user.clan_id}`);
             setMembers(response.data);
         } catch (err) {
             setError("Failed to fetch members. Please try again later.");
@@ -58,8 +66,10 @@ export default function ListMembersPage() {
     };
 
     useEffect(() => {
-        fetchMembers();
-    }, []);
+        if (user?.clan_id) {
+            fetchMembers();
+        }
+    }, [user?.clan_id]);
 
     const handleCopyCode = (code: string) => {
         navigator.clipboard.writeText(code).then(() => {
@@ -75,8 +85,13 @@ export default function ListMembersPage() {
             return;
         }
 
+        if (!user?.clan_id) {
+            toast.error('User clan not found.');
+            return;
+        }
+
         try {
-            await axios.delete(`${API_BASE_URL}/delete/${memberId}`);
+            await axios.delete(`${API_BASE_URL}/delete/${memberId}?clan_id=${user.clan_id}`);
             toast.success(`Member ${memberName} deleted successfully!`);
             fetchMembers();
         } catch (err: any) {

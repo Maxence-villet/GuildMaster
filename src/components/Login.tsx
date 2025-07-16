@@ -7,8 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../context/AuthContext';
 
-
-
 export default function Login() {
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
@@ -19,8 +17,15 @@ export default function Login() {
         try {
             const response = await axios.post('http://localhost:3001/api/member', { name, code });
             const userData = response.data;
+            
+            // Validate that clan_id is present in the response
+            if (!userData.clan_id) {
+                toast.error('Invalid user data: clan_id is missing');
+                return;
+            }
+            
             login(userData);
-            toast.success(`Welcome, ${response.data.name}!`);
+            toast.success(`Welcome, ${userData.name}!`);
             navigate('/guide/list');
         } catch (error: any) {
             if (error.response && error.response.data && error.response.data.message) {

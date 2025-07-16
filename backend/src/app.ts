@@ -13,7 +13,7 @@ const dbConfig = {
     host: 'localhost', // Ou l'adresse de votre serveur MySQL
     user: 'root', // Votre nom d'utilisateur MySQL
     password: 'root', // Votre mot de passe MySQL
-    database: 'clan_guides', // Le nom de votre base de données
+    database: 'GuildMaster', // Le nom de votre base de données
 };
 
 async function connectToDatabase(): Promise<mysql.Connection> {

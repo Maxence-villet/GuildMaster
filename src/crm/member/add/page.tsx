@@ -6,12 +6,16 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
+import { getAvailableRoles } from '../../../utils/memberRoles';
+import { useAuth } from '../../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Member {
   id: number;
   name: string;
   code: string;
   role: 'Member' | 'Lieutenant' | 'Leader';
+  clan_id: number;
   created_at: string;
 }
 
@@ -22,11 +26,26 @@ export default function AddMemberPage() {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const API_URL = 'http://localhost:3001/api/member';
+    
+    const { user } = useAuth();
+    const navigate = useNavigate();
 
-    // Fetch members list
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+    }, [user, navigate]);
+
+    // Fetch members list for the user's clan
     const fetchMembers = async () => {
+        if (!user?.clan_id) {
+            toast.error('User clan not found.');
+            return;
+        }
+
         try {
-            const response = await axios.get(`${API_URL}/list`);
+            const response = await axios.get(`${API_URL}/list?clan_id=${user.clan_id}`);
             setMembers(response.data);
         } catch (error) {
             console.error('Error fetching members:', error);
@@ -37,44 +56,25 @@ export default function AddMemberPage() {
     };
 
     useEffect(() => {
-        fetchMembers();
-    }, []);
-
-    // Calculate available roles based on current members
-    const getAvailableRoles = () => {
-        const leaderCount = members.filter(member => member.role === 'Leader').length;
-        const lieutenantCount = members.filter(member => member.role === 'Lieutenant').length;
-        const totalCount = members.length;
-
-        const availableRoles = [];
-
-        // Check if Leader slot is available
-        if (leaderCount < 1) {
-            availableRoles.push('Leader');
+        if (user?.clan_id) {
+            fetchMembers();
         }
-
-        // Check if Lieutenant slot is available
-        if (lieutenantCount < 4) {
-            availableRoles.push('Lieutenant');
-        }
-
-        // Check if total member limit allows more members
-        if (totalCount < 50) {
-            availableRoles.push('Member');
-        }
-
-        return availableRoles;
-    };
+    }, [user?.clan_id]);
 
     // Update memberRole if current selection is no longer available
     useEffect(() => {
-        const availableRoles = getAvailableRoles();
+        const availableRoles = getAvailableRoles(members);
         if (!availableRoles.includes(memberRole as any) && availableRoles.length > 0) {
             setMemberRole(availableRoles[0]);
         }
     }, [members, memberRole]);
 
     const handleAddMember = async () => {
+        if (!user?.clan_id) {
+            toast.error('User clan not found.');
+            return;
+        }
+
         if (!memberName.trim()) {
             toast.error('Member name cannot be empty.');
             return;
@@ -86,7 +86,11 @@ export default function AddMemberPage() {
 
         setSubmitting(true);
         try {
-            await axios.post<Member>(`${API_URL}/add`, { name: memberName, role: memberRole });
+            await axios.post<Member>(`${API_URL}/add`, { 
+                name: memberName, 
+                role: memberRole, 
+                clan_id: user.clan_id 
+            });
             toast.success(`Member ${memberName} added successfully!`);
             setMemberName('');
             setMemberRole('Member');
@@ -104,7 +108,11 @@ export default function AddMemberPage() {
         }
     };
 
-    const availableRoles = getAvailableRoles();
+    const availableRoles = getAvailableRoles(members);
+
+    if (!user) {
+        return null;
+    }
 
     return (
         <div className="flex flex-col h-screen">

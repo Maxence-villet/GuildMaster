@@ -61,7 +61,7 @@ export default function LandingPage() {
             </p>
             <div className="flex justify-center">
               <button
-                onClick={() => navigate('/login')}
+                onClick={() => navigate('/clan/add')}
                 className="bg-white text-blue-600 px-8 py-3 rounded-lg shadow-lg hover:bg-gray-200 transition-transform duration-200 transform hover:scale-105"
               >
                 <FontAwesomeIcon icon={faGamepad} className="mr-2" />

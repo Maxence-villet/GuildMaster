@@ -4,7 +4,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 
 interface Clan {
     id: number;
@@ -27,6 +27,26 @@ export default function AddClan() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    const checkExistingClan = async (name: string): Promise<boolean> => {
+        try {
+            const response = await axios.get(`http://localhost:3001/api/clan/check?name=${encodeURIComponent(name)}`);
+            return response.data.exists;
+        } catch (error) {
+            console.error('Error checking clan existence:', error);
+            return false;
+        }
+    };
+
+    const checkExistingMember = async (code: string): Promise<boolean> => {
+        try {
+            const response = await axios.get(`http://localhost:3001/api/member/check?code=${encodeURIComponent(code)}`);
+            return response.data.exists;
+        } catch (error) {
+            console.error('Error checking member existence:', error);
+            return false;
+        }
+    };
+
     const handleCreateClan = async () => {
         if (!clanName.trim()) {
             toast.error('Clan name is required.');
@@ -45,6 +65,22 @@ export default function AddClan() {
 
         setLoading(true);
         try {
+            // Check if clan already exists
+            const clanExists = await checkExistingClan(clanName.trim());
+            if (clanExists) {
+                toast.error('A clan with this name already exists.');
+                setLoading(false);
+                return;
+            }
+
+            // Check if member code already exists
+            const memberExists = await checkExistingMember(memberCode.trim());
+            if (memberExists) {
+                toast.error('A member with this code already exists.');
+                setLoading(false);
+                return;
+            }
+
             // First, create the clan
             const clanResponse = await axios.post<{ message: string; clan: Clan }>('http://localhost:3001/api/clan/add', { 
                 name: clanName.trim() 
@@ -86,7 +122,7 @@ export default function AddClan() {
     return (
         <div>
             <h2 className="text-xl sm:text-2xl font-bold text-blue-600 mb-6 text-center flex items-center justify-center gap-2">
-                <FontAwesomeIcon icon={faPlus} />
+            <FontAwesomeIcon icon={faShieldHalved} />
                 <p>Create Clan</p>
             </h2>
             <div className="space-y-6">

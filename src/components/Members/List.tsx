@@ -51,7 +51,7 @@ export default function ListMembers({
         );
       case 'Member':
         return (
-          <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-sm font-medium bg-gray-200 text-gray-800">
+          <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-sm font-medium bg-green-200 text-green-800">
             <FontAwesomeIcon icon={faPersonRifle} className="mr-1" />
             Member
           </span>

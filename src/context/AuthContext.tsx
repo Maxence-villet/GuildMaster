@@ -6,6 +6,7 @@ interface User {
     code: string;
     role: string;
     clan_id: number;
+    clan_name: string;
     created_at: string;
 }
 

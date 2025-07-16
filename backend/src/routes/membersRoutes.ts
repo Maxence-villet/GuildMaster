@@ -6,6 +6,27 @@ import crypto from 'crypto';
 export const createMembersRouter = (dbConnection: mysql.Connection) => {
     const router = Router();
 
+    // Check if member exists by code
+    router.get('/check', async (req: Request, res: Response) => {
+        const { code } = req.query;
+
+        if (!code || !code.toString().trim()) {
+            return res.status(400).json({ message: 'Member code is required.' });
+        }
+
+        try {
+            const [rows] = await dbConnection.execute<RowDataPacket[]>(
+                'SELECT id FROM Members WHERE code = ?',
+                [code.toString().trim()]
+            );
+
+            res.json({ exists: rows.length > 0 });
+        } catch (error) {
+            console.error('Error checking member existence:', error);
+            res.status(500).json({ message: 'Server error while checking member existence.' });
+        }
+    });
+
     router.get('/list', async (req: Request, res: Response) => {
         try {
             const { clan_id } = req.query;

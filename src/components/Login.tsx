@@ -7,16 +7,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../context/AuthContext';
 
+interface Clan {
+    id: number;
+    name: string;
+    created_at: string;
+}
+
 export default function Login() {
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
     const handleLogin = async () => {
+        if (!name.trim() || !code.trim()) {
+            toast.error('Name and code are required.');
+            return;
+        }
+
+        setLoading(true);
         try {
-            const response = await axios.post('http://localhost:3001/api/member', { name, code });
-            const userData = response.data;
+            // First, authenticate the member
+            const memberResponse = await axios.post('http://localhost:3001/api/member', { name, code });
+            const userData = memberResponse.data;
             
             // Validate that clan_id is present in the response
             if (!userData.clan_id) {
@@ -24,7 +38,17 @@ export default function Login() {
                 return;
             }
             
-            login(userData);
+            // Then, fetch the clan name
+            const clanResponse = await axios.get<Clan>(`http://localhost:3001/api/clan/${userData.clan_id}`);
+            const clanName = clanResponse.data.name;
+            
+            // Combine user data with clan name
+            const completeUserData = {
+                ...userData,
+                clan_name: clanName
+            };
+            
+            login(completeUserData);
             toast.success(`Welcome, ${userData.name}!`);
             navigate('/guide/list');
         } catch (error: any) {
@@ -33,6 +57,8 @@ export default function Login() {
             } else {
                 toast.error('Login failed. Please try again.');
             }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -50,9 +76,11 @@ export default function Login() {
                         name="name"
                         id="name"
                         className="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition duration-150 ease-in-out"
+                        placeholder="Enter your username..."
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                        disabled={loading}
                     />
                 </div>
                 <div>
@@ -62,17 +90,20 @@ export default function Login() {
                         name="code"
                         id="code"
                         className="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition duration-150 ease-in-out"
+                        placeholder="Enter your code..."
                         required
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
+                        disabled={loading}
                     />
                 </div>
             </div>
             <button
-                className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out mt-5"
+                className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out mt-5 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 onClick={handleLogin}
+                disabled={loading}
             >
-                Login
+                {loading ? 'Logging in...' : 'Login'}
             </button>
             <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </div>

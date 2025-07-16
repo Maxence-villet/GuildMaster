@@ -4,26 +4,22 @@ import { faPowerOff, faBars, faTachometerAlt, faUserGear, faPlus} from "@fortawe
 import { useNavigate } from 'react-router-dom'; // Importer useNavigate
 import { useAuth } from '../context/AuthContext'; // Importer useAuth
 
-
-
-
-
 export default function Header() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate(); // Initialiser useNavigate
   const { user, logout } = useAuth();
 
-    useEffect(() => {
+  useEffect(() => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-      useEffect(() => {
-        if (!user) {
-        navigate("/login");
-        }
-    }, [user, navigate]);
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
@@ -48,20 +44,19 @@ export default function Header() {
     navItems.push({ path: "/member/list", icon: faUserGear, label: "Manage members"})
   }
 
-
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-
+  const displayName = user.clan_name || 'Unknown Clan';
 
   return (
     <>
       {/* Desktop Header */}
       <header className={`bg-white shadow-sm p-4 flex justify-between items-center ${windowWidth > 1279 ? "block" : "hidden"}`}>
         <div className="flex items-center">
-          <h1 className="text-2xl font-bold">VA5 Family</h1>
+          <h1 className="text-2xl font-bold">{displayName}</h1>
         </div>
         <div className="flex items-center">
           {/* Utilisation d'un bouton pour la déconnexion */}
@@ -85,7 +80,7 @@ export default function Header() {
           >
             <FontAwesomeIcon icon={faBars} />
           </button>
-          <h1 className="text-2xl font-bold ml-4">VA5 Family</h1>
+          <h1 className="text-2xl font-bold ml-4">{displayName}</h1>
         </div>
         <div className="flex items-center">
           {/* Utilisation d'un bouton pour la déconnexion */}

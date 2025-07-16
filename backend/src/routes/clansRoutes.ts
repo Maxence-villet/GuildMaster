@@ -5,6 +5,27 @@ import mysql, { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 export const createClansRouter = (dbConnection: mysql.Connection) => {
     const router = Router();
 
+    // Check if clan exists by name
+    router.get('/check', async (req: Request, res: Response) => {
+        const { name } = req.query;
+
+        if (!name || !name.toString().trim()) {
+            return res.status(400).json({ message: 'Clan name is required.' });
+        }
+
+        try {
+            const [rows] = await dbConnection.execute<RowDataPacket[]>(
+                'SELECT id FROM Clan WHERE name = ?',
+                [name.toString().trim()]
+            );
+
+            res.json({ exists: rows.length > 0 });
+        } catch (error) {
+            console.error('Error checking clan existence:', error);
+            res.status(500).json({ message: 'Server error while checking clan existence.' });
+        }
+    });
+
     // Create a new clan
     router.post('/add', async (req: Request, res: Response) => {
         const { name } = req.body;

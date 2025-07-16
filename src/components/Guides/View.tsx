@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface Guide {
   id: number;
@@ -12,39 +11,15 @@ interface Guide {
   created_at: string;
 }
 
-export default function ViewGuide() {
-  const { id } = useParams<{ id: string }>();
-  const [guide, setGuide] = useState<Guide | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+interface ViewGuideProps {
+  guide: Guide | null;
+  loading: boolean;
+  error: string | null;
+  canDelete: boolean;
+  onDelete: () => void;
+}
 
-  const API_BASE_URL = 'http://localhost:3001/api/guide';
-
-  useEffect(() => {
-    const fetchGuide = async () => {
-      if (!id) {
-        setError("Guide ID is missing from URL.");
-        setLoading(false);
-        return;
-      }
-      try {
-        const response = await axios.get<Guide>(`${API_BASE_URL}/${id}`);
-        setGuide(response.data);
-      } catch (err) {
-        if (axios.isAxiosError(err) && err.response) {
-          setError(err.response.data.message || "Failed to fetch guide.");
-        } else {
-          setError("An unexpected error occurred while fetching the guide.");
-        }
-        console.error("Error fetching guide:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGuide();
-  }, [id]);
-
+export default function ViewGuide({ guide, loading, error, canDelete, onDelete }: ViewGuideProps) {
   if (loading) {
     return <div className="bg-white p-6 rounded-lg shadow text-black">Loading guide...</div>;
   }
@@ -59,8 +34,18 @@ export default function ViewGuide() {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <Toaster />
-      <h1 className="text-2xl font-bold text-black mb-4">{guide.title}</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold text-black">{guide.title}</h1>
+        {canDelete && (
+          <button
+            onClick={onDelete}
+            className="ml-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
+          >
+            <FontAwesomeIcon icon={faTrash} className="mr-2" />
+            Delete
+          </button>
+        )}
+      </div>
       <p className="text-gray-600 text-sm mb-2">By {guide.authorName}</p>
       <p className="text-gray-600 text-sm mb-4">Posted on {new Date(guide.created_at).toLocaleString()}</p>
       <div className="text-black leading-relaxed overflow-y-auto h-64 whitespace-pre-wrap">

@@ -1,76 +1,78 @@
 // src/components/Members/Add.tsx
-import React, { useState } from 'react';
-import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
+import React from 'react';
+import CountMember from './CountMember';
 
 interface Member {
   id: number;
   name: string;
   code: string;
-  role: string;
+  role: 'Member' | 'Lieutenant' | 'Leader';
   created_at: string;
 }
 
-export default function AddMember() {
-  const [memberName, setMemberName] = useState('');
-  const [memberRole, setMemberRole] = useState('Member');
-  const API_URL = 'http://localhost:3001/api/member/add';
+interface AddMemberProps {
+  memberName: string;
+  memberRole: string;
+  availableRoles: string[];
+  members: Member[];
+  loading: boolean;
+  submitting?: boolean;
+  onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRoleChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onSubmit: () => void;
+}
 
-  const handleAddMember = async () => {
-    if (!memberName.trim()) {
-      toast.error('Member name cannot be empty.');
-      return;
-    }
-    if (!memberRole.trim()) {
-      toast.error('Member role cannot be empty.');
-      return;
-    }
-
-
-    try {
-      const response = await axios.post<Member>(API_URL, { name: memberName, role: memberRole });
-      toast.success(`Member ${memberName} added successfully!`);
-      setMemberName('');
-      setMemberRole('Member');
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        toast.error(`Error: ${error.response.data.message || 'Something went wrong.'}`);
-      } else {
-        toast.error('An unexpected error occurred.');
-      }
-      console.error('Error adding member:', error);
-    }
-  };
-
+export default function AddMember({ 
+  memberName, 
+  memberRole, 
+  availableRoles, 
+  members, 
+  loading, 
+  submitting = false,
+  onNameChange, 
+  onRoleChange, 
+  onSubmit 
+}: AddMemberProps) {
   return (
-    <div className="w-full bg-white p-6 rounded-lg shadow flex flex-col gap-2">
-      <Toaster /> {/* Toaster component to display toasts */}
+    <div className="w-full bg-white p-6 rounded-lg shadow flex flex-col gap-4">
+      
+      {/* Form Section */}
       <div className="flex flex-col gap-2 mb-2">
         <input
           type="text"
           placeholder="Name..."
           className="flex-1 p-2 border rounded bg-white text-black"
           value={memberName}
-          onChange={(e) => setMemberName(e.target.value)}
+          onChange={onNameChange}
+          disabled={loading}
         />
         <div className='flex items-center gap-2'>
-        <select
-          className="flex-1 p-2 border rounded bg-white text-black py-2"
-          value={memberRole}
-          onChange={(e) => setMemberRole(e.target.value)}
+          <select
+            className="flex-1 p-2 border rounded bg-white text-black py-2"
+            value={memberRole}
+            onChange={onRoleChange}
+            disabled={availableRoles.length === 0 || loading}
+          >
+            {availableRoles.length === 0 ? (
+              <option value="">No slots available</option>
+            ) : (
+              availableRoles.map(role => (
+                <option key={role} value={role}>{role}</option>
+              ))
+            )}
+          </select>
+          <button
+            className="ml-auto w-[150] px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            onClick={onSubmit}
+                      disabled={availableRoles.length === 0 || submitting}
         >
-          <option value="Member">Member</option>
-          <option value="Lieutenant">Lieutenant</option>
-          <option value="Leader">Leader</option>
-        </select>
-        <button
-          className="ml-auto w-[150] px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          onClick={handleAddMember}
-        >
-          Add Member
-        </button>
+          {submitting ? 'Adding...' : 'Add Member'}
+          </button>
         </div>
       </div>
+
+      {/* Statistics Section */}
+      {!loading && <CountMember members={members} />}
     </div>
   );
 }

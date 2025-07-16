@@ -4,10 +4,18 @@ import LoginPage from "../crm/login/page";
 import ListMembersPage from "../crm/member/list/page";
 import AddMemberPage from "../crm/member/add/page";
 import ViewGuidePage from "../crm/guide/view/page";
+import Error404Page from "../crm/error404/page";
+import LandingPage from "../crm/landing/page";
+
+
 
 
 
 export const appRoutes = [
+    {
+        path: "/",
+        element: <LandingPage />
+    },
     {
         path: "/login",
         element: <LoginPage />
@@ -31,6 +39,10 @@ export const appRoutes = [
     {
         path: "/guide/view/:id",
         element: <ViewGuidePage />
+    },
+        {
+        path: "*",
+        element: <Error404Page />
     }
 
 ];

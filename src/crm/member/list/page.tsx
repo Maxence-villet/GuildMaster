@@ -5,11 +5,27 @@ import { faList, faPlus } from "@fortawesome/free-solid-svg-icons";
 import ListMembers from "../../../components/Members/List";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../../context/AuthContext';
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
+
+interface Member {
+  id: number;
+  name: string;
+  code: string;
+  role: 'Member' | 'Lieutenant' | 'Leader';
+}
 
 export default function ListMembersPage() {
-
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isDesktop, setIsDesktop] = useState(windowWidth > 1279);
+    const [members, setMembers] = useState<Member[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    const API_BASE_URL = 'http://localhost:3001/api/member';
 
     const handleResize = () => {
         setWindowWidth(window.innerWidth);
@@ -21,12 +37,61 @@ export default function ListMembersPage() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+    }, [user, navigate]);
+
+    const fetchMembers = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/list`);
+            setMembers(response.data);
+        } catch (err) {
+            setError("Failed to fetch members. Please try again later.");
+            console.error("Error fetching members:", err);
+            toast.error("Failed to fetch members.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchMembers();
+    }, []);
+
+    const handleCopyCode = (code: string) => {
+        navigator.clipboard.writeText(code).then(() => {
+            toast.success("Code copied to clipboard!");
+        }).catch(err => {
+            console.error("Failed to copy text: ", err);
+            toast.error("Failed to copy code.");
+        });
+    };
+
+    const handleDeleteMember = async (memberId: number, memberName: string) => {
+        if (!window.confirm(`Are you sure you want to delete ${memberName}?`)) {
+            return;
+        }
+
+        try {
+            await axios.delete(`${API_BASE_URL}/delete/${memberId}`);
+            toast.success(`Member ${memberName} deleted successfully!`);
+            fetchMembers();
+        } catch (err: any) {
+            console.error(`Error deleting member ${memberName}:`, err);
+            toast.error(`Failed to delete member ${memberName}: ${err.message}`);
+        }
+    };
+
     function handleClick() {
         navigate("/member/add");
     }
 
-
-    const navigate = useNavigate();
+    if (!user) {
+        return null;
+    }
 
     return (
         <div className="flex flex-col h-screen w-full">
@@ -49,7 +114,15 @@ export default function ListMembersPage() {
                         </div>
                     </div>
                     <div className="w-full mt-4">
-                        <ListMembers />
+                        <Toaster />
+                        <ListMembers
+                            members={members}
+                            error={error}
+                            loading={loading}
+                            user={user}
+                            onCopyCode={handleCopyCode}
+                            onDeleteMember={handleDeleteMember}
+                        />
                     </div>
                 </main>
             </div>

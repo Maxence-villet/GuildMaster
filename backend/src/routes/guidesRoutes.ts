@@ -81,5 +81,27 @@ export const createGuidesRouter = (dbConnection: mysql.Connection) => {
         }
     });
 
+    router.delete('/delete/:id', async (req: Request, res: Response) => {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ message: 'Guide ID is required.' });
+        }
+
+        try {
+            const query = 'DELETE FROM Guides WHERE id = ?';
+            const [result] = await dbConnection.execute(query, [id]) as [mysql.OkPacket, mysql.FieldPacket[]];
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: 'Guide not found.' });
+            }
+
+            res.status(200).json({ message: 'Guide deleted successfully.' });
+        } catch (error) {
+            console.error('Error deleting guide:', error);
+            res.status(500).json({ message: 'Server error while deleting guide.' });
+        }
+    });
+
     return router;
 };

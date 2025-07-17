@@ -37,6 +37,7 @@ export default function Sidebar() {
     }
 
     const canManageMembers = ["Leader", "Lieutenant"].includes(user.role);
+    const canAddGuide = ["Leader", "Lieutenant"].includes(user.role);
     
     return (
         <div className={`w-64 bg-white shadow-lg shadow-gray-300 h-screen p-4 ${isDesktop ? "block" : "hidden"}`}>
@@ -60,7 +61,7 @@ export default function Sidebar() {
                                 <span>All guides</span>
                             </div>
                         </li>
-                        {user.role === "Leader" && (
+                        {canAddGuide && (
                             <li>
                                 <div 
                                     onClick={() => navigate('/guide/add')} 

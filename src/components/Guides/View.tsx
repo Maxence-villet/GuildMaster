@@ -1,6 +1,8 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Guide {
   id: number;
@@ -20,6 +22,20 @@ interface ViewGuideProps {
 }
 
 export default function ViewGuide({ guide, loading, error, canDelete, onDelete }: ViewGuideProps) {
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  if(!user) {
+    navigate('/login');
+  }
+
+  if(user?.role == "Leader") {
+    canDelete = true;
+  }
+
+
+  
   if (loading) {
     return <div className="bg-white p-6 rounded-lg shadow text-black">Loading guide...</div>;
   }
@@ -31,6 +47,7 @@ export default function ViewGuide({ guide, loading, error, canDelete, onDelete }
   if (!guide) {
     return <div className="bg-white p-6 rounded-lg shadow text-black">Guide not found.</div>;
   }
+
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">

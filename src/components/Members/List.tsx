@@ -99,35 +99,37 @@ export default function ListMembers({
       {members.length === 0 ? (
         <div className="text-black p-6 rounded-lg shadow">No members found.</div>
       ) : (
-        members.map((member) => (
-          <div
-            key={member.id}
-            className="flex items-center justify-between bg-gray-100 p-2 mb-2 rounded shadow"
-          >
-            <div className="flex items-center">
-              <span className="text-black">{member.name}</span>
-              {getRoleTag(member.role)}
+        <div className="max-h-96 overflow-y-auto flex flex-col gap-1">
+          {members.map((member) => (
+            <div
+              key={member.id}
+              className="flex items-center justify-between bg-gray-100 p-2 mb-2 rounded shadow"
+            >
+              <div className="flex items-center">
+                <span className="text-black">{member.name}</span>
+                {getRoleTag(member.role)}
+              </div>
+              <div className="flex space-x-2">
+                {canCopy(member.role) && (
+                  <button
+                    onClick={() => onCopyCode(member.code)}
+                    className="text-blue-600 hover:text-gray-700"
+                  >
+                    <FontAwesomeIcon icon={faCopy} />
+                  </button>
+                )}
+                {canDelete(member.role) && (
+                  <button
+                    onClick={() => onDeleteMember(member.id, member.name)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="flex space-x-2">
-              {canCopy(member.role) && (
-                <button
-                  onClick={() => onCopyCode(member.code)}
-                  className="text-blue-600 hover:text-gray-700"
-                >
-                  <FontAwesomeIcon icon={faCopy} />
-                </button>
-              )}
-              {canDelete(member.role) && (
-                <button
-                  onClick={() => onDeleteMember(member.id, member.name)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
-              )}
-            </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
     </div>
   );

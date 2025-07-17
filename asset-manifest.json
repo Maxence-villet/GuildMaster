@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/GuildMaster/static/css/main.2a9a26f2.css",
+    "main.js": "/GuildMaster/static/js/main.d142be74.js",
+    "index.html": "/GuildMaster/index.html",
+    "main.2a9a26f2.css.map": "/GuildMaster/static/css/main.2a9a26f2.css.map",
+    "main.d142be74.js.map": "/GuildMaster/static/js/main.d142be74.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2a9a26f2.css",
+    "static/js/main.d142be74.js"
+  ]
+}

@@ -114,6 +114,10 @@ export default function AddMemberPage() {
         return null;
     }
 
+    if(user.role == "Lieutenant") {
+        availableRoles.splice(availableRoles.indexOf("Lieutenant"), 1);
+    }
+
     return (
         <div className="flex flex-col h-screen">
             <Header />

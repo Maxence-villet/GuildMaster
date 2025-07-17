@@ -8,12 +8,28 @@ export const createGuidesRouter = (dbConnection: mysql.Connection) => {
 
     router.get('/list', async (req: Request, res: Response) => {
         try {
-            const { clan_id } = req.query;
+            const { clan_id, page = '1' } = req.query;
             
             if (!clan_id) {
                 return res.status(400).json({ message: 'Clan ID is required.' });
             }
 
+            const pageNumber = parseInt(page as string, 10);
+            const itemsPerPage = 5;
+            const offset = (pageNumber - 1) * itemsPerPage;
+
+            // Get total count for pagination
+            const countQuery = `
+                SELECT COUNT(*) as total
+                FROM Guides AS G
+                JOIN Members AS M ON G.author_id = M.id
+                WHERE M.clan_id = ?`;
+            
+            const [countResult] = await dbConnection.execute(countQuery, [clan_id]) as [mysql.RowDataPacket[], mysql.FieldPacket[]];
+            const totalItems = countResult[0].total;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            // Get paginated guides
             const query = `
                 SELECT 
                     G.id, 
@@ -29,10 +45,22 @@ export const createGuidesRouter = (dbConnection: mysql.Connection) => {
                 WHERE 
                     M.clan_id = ?
                 ORDER BY 
-                    G.created_at DESC`;
+                    G.created_at DESC
+                LIMIT ? OFFSET ?`;
             
-            const [rows] = await dbConnection.execute(query, [clan_id]);
-            res.json(rows);
+            const [rows] = await dbConnection.execute(query, [clan_id, itemsPerPage, offset]);
+            
+            res.json({
+                guides: rows,
+                pagination: {
+                    currentPage: pageNumber,
+                    totalPages,
+                    totalItems,
+                    itemsPerPage,
+                    hasNextPage: pageNumber < totalPages,
+                    hasPreviousPage: pageNumber > 1
+                }
+            });
         } catch (error) {
             console.error('Erreur lors de la récupération des guides :', error);
             res.status(500).json({ message: 'Erreur serveur lors de la récupération des guides.' });

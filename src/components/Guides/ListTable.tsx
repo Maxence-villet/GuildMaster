@@ -36,7 +36,7 @@ export default function ListTable({ guides, error, loading, onGuideClick }: List
           className="w-full items-center p-2 bg-white p-6 border rounded-lg py-5 mb-2 rounded"
           onClick={() => onGuideClick(guide.id)}
         >
-          <div className='flex justify-between'>
+          <div className='flex justify-between px-2'>
             <span>{guide.title}</span>
             <span className="text-gray-600">{new Date(guide.created_at).toLocaleDateString()}</span>
           </div>

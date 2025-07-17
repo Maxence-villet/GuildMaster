@@ -1,39 +1,72 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPowerOff, faBars, faTachometerAlt, faUserGear, faPlus, faList, faChartBar, faBell, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
-
-// Navigation items (except logout)
-const navItems = [
-  { href: "/guide/list", icon: faTachometerAlt, label: "All Guides" },
-  { href: "/guide/add", icon: faPlus, label: "Add Guide" },
-  { href: "/member/list", icon: faUserGear, label: "Manage members" },
-];
+import { faPowerOff, faBars, faTachometerAlt, faUserGear, faPlus} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from 'react-router-dom'; // Importer useNavigate
+import { useAuth } from '../context/AuthContext'; // Importer useAuth
 
 export default function Header() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const handleResize = () => {
-    setWindowWidth(window.innerWidth);
-    if (window.innerWidth >= 1279) setMenuOpen(false); // Close menu on desktop
-  };
+  const navigate = useNavigate(); // Initialiser useNavigate
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+    if (window.innerWidth >= 1279) setMenuOpen(false); // Close menu on desktop
+  };
+
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
+
+  const navItems = [
+    { path: "/guide/list", icon: faTachometerAlt, label: "All Guides" },
+  ];
+
+  if(user.role === "Leader") {
+    navItems.push({ path: "/guide/add", icon: faPlus, label: "Add Guide" });
+    navItems.push({ path: "/member/list", icon: faUserGear, label: "Manage members"})
+  }
+
+  if(user.role === "Lieutenant") {
+    navItems.push({ path: "/member/list", icon: faUserGear, label: "Manage members"})
+  }
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const displayName = user.clan_name || 'Unknown Clan';
+
   return (
     <>
       {/* Desktop Header */}
       <header className={`bg-white shadow-sm p-4 flex justify-between items-center ${windowWidth > 1279 ? "block" : "hidden"}`}>
         <div className="flex items-center">
-          <h1 className="text-2xl font-bold">VA5 Family</h1>
+          <h1 className="text-2xl font-bold">{displayName}</h1>
         </div>
         <div className="flex items-center">
-          <a href="/logout" className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2">
+          {/* Utilisation d'un bouton pour la déconnexion */}
+          <button 
+            onClick={handleLogout} 
+            className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
+            aria-label="Logout"
+          >
             <FontAwesomeIcon icon={faPowerOff} />
-          </a>
+          </button>
         </div>
       </header>
 
@@ -47,12 +80,17 @@ export default function Header() {
           >
             <FontAwesomeIcon icon={faBars} />
           </button>
-          <h1 className="text-2xl font-bold ml-4">VA5 Family</h1>
+          <h1 className="text-2xl font-bold ml-4">{displayName}</h1>
         </div>
         <div className="flex items-center">
-          <a href="/logout" className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2">
+          {/* Utilisation d'un bouton pour la déconnexion */}
+          <button 
+            onClick={handleLogout} 
+            className="text-red-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
+            aria-label="Logout"
+          >
             <FontAwesomeIcon icon={faPowerOff} />
-          </a>
+          </button>
         </div>
         {/* Dropdown menu */}
         {menuOpen && (
@@ -77,15 +115,18 @@ export default function Header() {
             </button>
             <ul className="flex flex-col space-y-2">
               {navItems.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2"
-                    onClick={() => setMenuOpen(false)}
+                <li key={item.path}> {/* Utilisation de 'item.path' pour la clé */}
+                  {/* Utilisation d'un div cliquable pour la navigation */}
+                  <div
+                    onClick={() => {
+                      navigate(item.path); // Naviguer vers le chemin spécifié
+                      setMenuOpen(false); // Fermer le menu après la navigation
+                    }}
+                    className="text-blue-600 flex hover:bg-gray-100 p-2 rounded-md flex-row items-center gap-2 cursor-pointer"
                   >
                     <FontAwesomeIcon icon={item.icon} />
                     <span>{item.label}</span>
-                  </a>
+                  </div>
                 </li>
               ))}
             </ul>

@@ -1,23 +1,47 @@
 import React from 'react';
 
-export default function ListTable () {
-  const tasks = [
-    { id: 1, text: "Tips : Become 6th to 1st with bank system", date: "07/12/2025" },
-    { id: 2, text: "Lorem Ipsum", date: "07/12/2025" },
-    { id: 3, text: "Lorem Ipsum", date: "07/12/2025" },
-    { id: 4, text: "Lorem Ipsum", date: "07/12/2025" },
-  ];
+interface Guide {
+  id: number;
+  title: string;
+  author_id: number;
+  text: string;
+  created_at: string;
+}
+
+interface ListTableProps {
+  guides: Guide[];
+  error?: string | null;
+  loading?: boolean;
+  onGuideClick: (id: number) => void;
+}
+
+export default function ListTable({ guides, error, loading, onGuideClick }: ListTableProps) {
+  if (loading) {
+    return <div className="text-black p-6 rounded-lg shadow">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500 p-6 rounded-lg shadow">{error}</div>;
+  }
+
+  if (guides.length === 0) {
+    return <div className="text-black p-6 rounded-lg shadow">No guides found.</div>;
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      {tasks.map((task) => (
-        <button className=" w-full items-center p-2 bg-white p-6 border rounded-lg py-5 mb-2 rounded">
-        <div key={task.id} className='flex justify-between'>
-          <span>{task.text}</span>
-          <span className="text-gray-600">{task.date}</span>
-        </div>
+      {guides.map((guide) => (
+        <button
+          key={guide.id}
+          className="w-full items-center p-2 bg-white p-6 border rounded-lg py-5 mb-2 rounded"
+          onClick={() => onGuideClick(guide.id)}
+        >
+          <div className='flex justify-between px-2'>
+            <span>{guide.title}</span>
+            <span className="text-gray-600">{new Date(guide.created_at).toLocaleDateString()}</span>
+          </div>
         </button>
       ))}
     </div>
   );
-};
+}

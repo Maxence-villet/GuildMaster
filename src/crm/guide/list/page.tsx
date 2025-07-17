@@ -82,7 +82,7 @@ export default function ListGuidePage() {
                 <div className="hidden xl:block">
                     <Sidebar />
                 </div>
-                <main className={`flex-1 w-full p-2 xl:p-8 max-w-screen-lg mx-auto ${isDesktop ? "w-full" : "w-[90%]"}`}>
+                <main className={`flex-1 w-full p-2 xl:p-8 max-w-screen-lg mx-auto w-[90%]`}>
                     <div className={`flex flex-row xl:flex-row justify-between items-center mb-4 gap-4`}>
                         <h2 className={`text-2xl font-bold flex items-center gap-2 w-full`}>
                             <FontAwesomeIcon icon={faList} className="text-blue-600" />

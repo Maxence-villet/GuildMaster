@@ -35,7 +35,7 @@ export const createMembersRouter = (dbConnection: mysql.Connection) => {
                 return res.status(400).json({ message: 'Clan ID is required.' });
             }
 
-            const query = 'SELECT id, name, code, role, clan_id, created_at FROM Members WHERE clan_id = ?';
+            const query = 'SELECT id, name, code, role, clan_id, created_at FROM Members WHERE clan_id = ? ORDER BY role ASC';
             const [rows] = await dbConnection.execute(query, [clan_id]);
             res.json(rows);
         } catch (error) {

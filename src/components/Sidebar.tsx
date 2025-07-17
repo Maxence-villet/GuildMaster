@@ -40,7 +40,7 @@ export default function Sidebar() {
     const canAddGuide = ["Leader", "Lieutenant"].includes(user.role);
     
     return (
-        <div className={`w-64 bg-white shadow-lg shadow-gray-300 h-screen p-4 ${isDesktop ? "block" : "hidden"}`}>
+        <div className={`w-64 bg-white shadow-lg shadow-gray-300 h-[calc(100vh-64px)] p-4 ${isDesktop ? "block" : "hidden"}`}>
             <div className="flex flex-col space-x-3 mb-6">
                 <div>
                     <h2 className="text-lg font-semibold text-gray-800">

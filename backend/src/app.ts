@@ -5,16 +5,20 @@ import { createMembersRouter } from './routes/membersRoutes';
 import { createGuidesRouter } from './routes/guidesRoutes';
 import cors from 'cors';
 import { createClansRouter } from './routes/clansRoutes';
+import dotenv from 'dotenv';
+
+// Charger les variables d'environnement depuis le fichier .env
+dotenv.config();
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 // Configuration de la connexion à la base de données MySQL
 const dbConfig = {
-    host: 'localhost', // Ou l'adresse de votre serveur MySQL
-    user: 'root', // Votre nom d'utilisateur MySQL
-    password: 'root', // Votre mot de passe MySQL
-    database: 'GuildMaster', // Le nom de votre base de données
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
 };
 
 async function connectToDatabase(): Promise<mysql.Connection> {

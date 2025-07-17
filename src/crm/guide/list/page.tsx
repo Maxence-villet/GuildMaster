@@ -51,7 +51,7 @@ export default function ListGuidePage() {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get<Guide[]>('http://localhost:3001/api/guide/list');
+                const response = await axios.get<Guide[]>(`http://localhost:3001/api/guide/list?clan_id=${user?.clan_id}`);
                 setGuides(response.data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
@@ -64,8 +64,11 @@ export default function ListGuidePage() {
                 setLoading(false);
             }
         };
-        fetchGuides();
-    }, []);
+        
+        if (user?.clan_id) {
+            fetchGuides();
+        }
+    }, [user?.clan_id]);
 
     if (!user) {
         navigate("/login");

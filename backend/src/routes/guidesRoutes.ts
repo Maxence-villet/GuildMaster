@@ -8,8 +8,30 @@ export const createGuidesRouter = (dbConnection: mysql.Connection) => {
 
     router.get('/list', async (req: Request, res: Response) => {
         try {
-            const query = 'SELECT id, title, author_id, text, created_at FROM Guides';
-            const [rows] = await dbConnection.execute(query);
+            const { clan_id } = req.query;
+            
+            if (!clan_id) {
+                return res.status(400).json({ message: 'Clan ID is required.' });
+            }
+
+            const query = `
+                SELECT 
+                    G.id, 
+                    G.title, 
+                    G.author_id, 
+                    G.text, 
+                    G.created_at,
+                    M.name AS authorName
+                FROM 
+                    Guides AS G
+                JOIN 
+                    Members AS M ON G.author_id = M.id
+                WHERE 
+                    M.clan_id = ?
+                ORDER BY 
+                    G.created_at DESC`;
+            
+            const [rows] = await dbConnection.execute(query, [clan_id]);
             res.json(rows);
         } catch (error) {
             console.error('Erreur lors de la récupération des guides :', error);

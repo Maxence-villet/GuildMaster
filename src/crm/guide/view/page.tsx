@@ -24,7 +24,6 @@ export default function ViewGuidePage() {
     
     const { user } = useAuth();
     const navigate = useNavigate();
-    const API_BASE_URL = 'http://localhost:3001/api/guide';
 
     useEffect(() => {
         if (!user) {
@@ -41,7 +40,7 @@ export default function ViewGuidePage() {
                 return;
             }
             try {
-                const response = await axios.get<Guide>(`${API_BASE_URL}/${id}`);
+                const response = await axios.get<Guide>(`https://guildmaster-backend.onrender.com/api/guide/${id}`);
                 setGuide(response.data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
@@ -56,7 +55,7 @@ export default function ViewGuidePage() {
         };
 
         fetchGuide();
-    }, [id, API_BASE_URL]);
+    }, [id, "https://guildmaster-backend.onrender.com/api/guide"]);
 
     const handleDelete = async () => {
         if (!guide || !user || guide.author_id !== user.id) {
@@ -66,7 +65,7 @@ export default function ViewGuidePage() {
 
         if (window.confirm("Are you sure you want to delete this guide?")) {
             try {
-                await axios.delete(`${API_BASE_URL}/delete/${guide.id}`);
+                await axios.delete(`https://guildmaster-backend.onrender.com/api/guide/delete/${guide.id}`);
                 toast.success("Guide deleted successfully!");
                 navigate("/guide/list"); 
             } catch (err) {

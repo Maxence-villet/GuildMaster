@@ -15,7 +15,6 @@ export default function AddGuidePage() {
     const [loading, setLoading] = useState(false);
     const { user } = useAuth();
     const navigate = useNavigate();
-    const API_URL = 'http://localhost:3001/api/guide/add';
 
     const handleAddGuide = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -32,7 +31,7 @@ export default function AddGuidePage() {
 
         setLoading(true);
         try {
-            await axios.post(API_URL, { title, author_id: user.id, text });
+            await axios.post("https://guildmaster-backend.onrender.com/api/guide/add", { title, author_id: user.id, text });
             toast.success('Guide added successfully!');
             setTitle('');
             setText('');

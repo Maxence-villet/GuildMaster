@@ -25,7 +25,6 @@ export default function AddMemberPage() {
     const [members, setMembers] = useState<Member[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    const API_URL = 'http://localhost:3001/api/member';
     
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -45,7 +44,7 @@ export default function AddMemberPage() {
         }
 
         try {
-            const response = await axios.get(`${API_URL}/list?clan_id=${user.clan_id}`);
+            const response = await axios.get(`https://guildmaster-backend.onrender.com/api/member/list?clan_id=${user.clan_id}`);
             setMembers(response.data);
         } catch (error) {
             console.error('Error fetching members:', error);
@@ -86,7 +85,7 @@ export default function AddMemberPage() {
 
         setSubmitting(true);
         try {
-            await axios.post<Member>(`${API_URL}/add`, { 
+            await axios.post<Member>(`https://guildmaster-backend.onrender.com/api/member/add`, { 
                 name: memberName, 
                 role: memberRole, 
                 clan_id: user.clan_id

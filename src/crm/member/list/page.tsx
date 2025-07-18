@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../../context/AuthContext';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
-import { getAvailableRoles } from '../../../utils/memberRoles';
 
 interface Member {
   id: number;
@@ -27,7 +26,6 @@ export default function ListMembersPage() {
 
     const { user } = useAuth();
     const navigate = useNavigate();
-    const API_BASE_URL = 'http://localhost:3001/api/member';
 
     const handleResize = () => {
         setWindowWidth(window.innerWidth);
@@ -54,7 +52,7 @@ export default function ListMembersPage() {
         }
 
         try {
-            const response = await axios.get(`${API_BASE_URL}/list?clan_id=${user.clan_id}`);
+            const response = await axios.get(`https://guildmaster-backend.onrender.com/api/member/list?clan_id=${user.clan_id}`);
             setMembers(response.data);
         } catch (err) {
             setError("Failed to fetch members. Please try again later.");
@@ -91,7 +89,7 @@ export default function ListMembersPage() {
         }
 
         try {
-            await axios.delete(`${API_BASE_URL}/delete/${memberId}?clan_id=${user.clan_id}`);
+            await axios.delete(`https://guildmaster-backend.onrender.com/api/member/delete/${memberId}?clan_id=${user.clan_id}`);
             toast.success(`Member ${memberName} deleted successfully!`);
             fetchMembers();
         } catch (err: any) {

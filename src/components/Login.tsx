@@ -29,7 +29,7 @@ export default function Login() {
         setLoading(true);
         try {
             // First, authenticate the member
-            const memberResponse = await axios.post('http://localhost:3001/api/member', { name, code });
+            const memberResponse = await axios.post('https://guildmaster-backend.onrender.com/api/member', { name, code });
             const userData = memberResponse.data;
             
             // Validate that clan_id is present in the response
@@ -39,7 +39,7 @@ export default function Login() {
             }
             
             // Then, fetch the clan name
-            const clanResponse = await axios.get<Clan>(`http://localhost:3001/api/clan/${userData.clan_id}`);
+            const clanResponse = await axios.get<Clan>(`https://guildmaster-backend.onrender.com/api/clan/${userData.clan_id}`);
             const clanName = clanResponse.data.name;
             
             // Combine user data with clan name

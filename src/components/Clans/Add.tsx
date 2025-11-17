@@ -4,7 +4,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
+import { faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 
 interface Clan {
     id: number;

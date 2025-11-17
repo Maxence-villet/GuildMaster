@@ -1,4 +1,3 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../context/AuthContext';
@@ -30,7 +29,7 @@ export default function ViewGuide({ guide, loading, error, canDelete, onDelete }
     navigate('/login');
   }
 
-  if(user?.role == "Leader") {
+  if(user?.role === "Leader") {
     canDelete = true;
   }
 

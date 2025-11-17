@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddMember from "../../../components/Members/Add";
 import Header from "../../../components/Header";
 import Sidebar from "../../../components/Sidebar";
-import { faList, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
@@ -113,7 +113,7 @@ export default function AddMemberPage() {
         return null;
     }
 
-    if(user.role == "Lieutenant") {
+    if(user.role === "Lieutenant") {
         availableRoles.splice(availableRoles.indexOf("Lieutenant"), 1);
     }
 

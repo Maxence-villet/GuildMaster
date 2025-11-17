@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddGuide from "../../../components/Guides/Add";
 import Header from "../../../components/Header";
 import Sidebar from "../../../components/Sidebar";
-import { faList, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';

@@ -31,7 +31,7 @@ export default function AddGuidePage() {
 
         setLoading(true);
         try {
-            await axios.post("https://guildmaster-backend.onrender.com/api/guide/add", { title, author_id: user.id, text });
+            await axios.post(`http://localhost:3001/api/guide/add`, { title, author_id: user.id, text });
             toast.success('Guide added successfully!');
             setTitle('');
             setText('');

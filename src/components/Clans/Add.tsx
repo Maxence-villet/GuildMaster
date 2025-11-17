@@ -29,7 +29,7 @@ export default function AddClan() {
 
     const checkExistingClan = async (name: string): Promise<boolean> => {
         try {
-            const response = await axios.get(`https://guildmaster-backend.onrender.com/api/clan/check?name=${encodeURIComponent(name)}`);
+            const response = await axios.get(`http://localhost:3001/api/clan/check?name=${encodeURIComponent(name)}`);
             return response.data.exists;
         } catch (error) {
             console.error('Error checking clan existence:', error);
@@ -39,7 +39,7 @@ export default function AddClan() {
 
     const checkExistingMember = async (code: string): Promise<boolean> => {
         try {
-            const response = await axios.get(`https://guildmaster-backend.onrender.com/api/member/check?code=${encodeURIComponent(code)}`);
+            const response = await axios.get(`http://localhost:3001/api/member/check?code=${encodeURIComponent(code)}`);
             return response.data.exists;
         } catch (error) {
             console.error('Error checking member existence:', error);
@@ -82,7 +82,7 @@ export default function AddClan() {
             }
 
             // First, create the clan
-            const clanResponse = await axios.post<{ message: string; clan: Clan }>('https://guildmaster-backend.onrender.com/api/clan/add', { 
+            const clanResponse = await axios.post<{ message: string; clan: Clan }>('http://localhost:3001/api/clan/add', { 
                 name: clanName.trim() 
             });
             
@@ -90,7 +90,7 @@ export default function AddClan() {
             toast.success(`Clan "${clan.name}" created successfully!`);
 
             // Then, create the first member as Leader
-            const memberResponse = await axios.post<{ message: string; member: Member }>('https://guildmaster-backend.onrender.com/api/member/add', {
+            const memberResponse = await axios.post<{ message: string; member: Member }>('http://localhost:3001/api/member/add', {
                 name: memberName.trim(),
                 role: 'Leader',
                 clan_id: clan.id,

@@ -40,7 +40,7 @@ export default function ViewGuidePage() {
                 return;
             }
             try {
-                const response = await axios.get<Guide>(`https://guildmaster-backend.onrender.com/api/guide/${id}`);
+                const response = await axios.get<Guide>(`http://localhost:3001/api/guide/${id}`);
                 setGuide(response.data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
@@ -55,17 +55,20 @@ export default function ViewGuidePage() {
         };
 
         fetchGuide();
-    }, [id, "https://guildmaster-backend.onrender.com/api/guide"]);
+    }, [id, "http://localhost:3001/api/guide"]);
 
     const handleDelete = async () => {
-        if (!guide || !user || guide.author_id !== user.id) {
-            toast.error("You are not authorized to delete this guide.");
-            return;
+        if(!guide || !user || user.role !== "Leader") {
+            if (!guide || !user || guide.author_id !== user.id) {
+                toast.error("You are not authorized to delete this guide.");
+                return;
+            }
         }
+        
 
         if (window.confirm("Are you sure you want to delete this guide?")) {
             try {
-                await axios.delete(`https://guildmaster-backend.onrender.com/api/guide/delete/${guide.id}`);
+                await axios.delete(`http://localhost:3001/api/guide/delete/${guide.id}`);
                 toast.success("Guide deleted successfully!");
                 navigate("/guide/list"); 
             } catch (err) {

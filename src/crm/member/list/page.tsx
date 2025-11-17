@@ -52,7 +52,7 @@ export default function ListMembersPage() {
         }
 
         try {
-            const response = await axios.get(`https://guildmaster-backend.onrender.com/api/member/list?clan_id=${user.clan_id}`);
+            const response = await axios.get(`http://localhost:3001/api/member/list?clan_id=${user.clan_id}`);
             setMembers(response.data);
         } catch (err) {
             setError("Failed to fetch members. Please try again later.");
@@ -89,7 +89,7 @@ export default function ListMembersPage() {
         }
 
         try {
-            await axios.delete(`https://guildmaster-backend.onrender.com/api/member/delete/${memberId}?clan_id=${user.clan_id}`);
+            await axios.delete(`http://localhost:3001/api/member/delete/${memberId}?clan_id=${user.clan_id}`);
             toast.success(`Member ${memberName} deleted successfully!`);
             fetchMembers();
         } catch (err: any) {

@@ -74,7 +74,7 @@ export default function ListGuidePage() {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get<GuidesResponse>(`https://guildmaster-backend.onrender.com/api/guide/list?clan_id=${user?.clan_id}&page=${currentPage}`);
+                const response = await axios.get<GuidesResponse>(`http://localhost:3001/api/guide/list?clan_id=${user?.clan_id}&page=${currentPage}`);
                 setGuides(response.data.guides);
                 setPagination(response.data.pagination);
             } catch (err) {

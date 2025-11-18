@@ -1,8 +1,8 @@
 import AddGuidePage from "../crm/guide/add/page";
 import ListGuidePage from "../crm/guide/list/page";
 import LoginPage from "../crm/login/page";
-import ListMembersPage from "../crm/member/list/page";
-import AddMemberPage from "../crm/member/add/page";
+import ListmembersPage from "../crm/member/list/page";
+import AddmemberPage from "../crm/member/add/page";
 import ViewGuidePage from "../crm/guide/view/page";
 import Error404Page from "../crm/error404/page";
 import LandingPage from "../crm/landing/page";
@@ -31,11 +31,11 @@ export const appRoutes = [
     },
     {
         path: "/member/list",
-        element: <ListMembersPage />
+        element: <ListmembersPage />
     },
     {
         path: "/member/add",
-        element: <AddMemberPage />
+        element: <AddmemberPage />
     },
     {
         path: "/guide/view/:id",
@@ -49,5 +49,4 @@ export const appRoutes = [
         path: "/clan/add",
         element: <AddClanPage />
     }
-
 ];

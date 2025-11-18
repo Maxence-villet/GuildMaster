@@ -1,20 +1,20 @@
-// src/components/Members/Add.tsx
+// src/components/members//Add.tsx
 import React from 'react';
 import CountMember from './CountMember';
 
-interface Member {
+interface member {
   id: number;
   name: string;
   code: string;
-  role: 'Member' | 'Lieutenant' | 'Leader';
+  role: 'member' | 'lieutenant' | 'leader';
   created_at: string;
 }
 
-interface AddMemberProps {
+interface AddmemberProps {
   memberName: string;
   memberRole: string;
   availableRoles: string[];
-  members: Member[];
+  members: member[];
   loading: boolean;
   submitting?: boolean;
   onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -22,7 +22,7 @@ interface AddMemberProps {
   onSubmit: () => void;
 }
 
-export default function AddMember({ 
+export default function Addmember({ 
   memberName, 
   memberRole, 
   availableRoles, 
@@ -32,7 +32,7 @@ export default function AddMember({
   onNameChange, 
   onRoleChange, 
   onSubmit 
-}: AddMemberProps) {
+}: AddmemberProps) {
   return (
     <div className="w-full bg-white p-6 rounded-lg shadow flex flex-col gap-4">
       
@@ -66,7 +66,7 @@ export default function AddMember({
             onClick={onSubmit}
                       disabled={availableRoles.length === 0 || submitting}
         >
-          {submitting ? 'Adding...' : 'Add Member'}
+          {submitting ? 'Adding...' : 'Add member'}
           </button>
         </div>
       </div>

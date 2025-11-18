@@ -3,11 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faTrash, faDragon, faCrown, faPersonRifle } from '@fortawesome/free-solid-svg-icons';
 import CountMember from './CountMember';
 
-interface Member {
+interface member {
   id: number;
   name: string;
   code: string;
-  role: 'Member' | 'Lieutenant' | 'Leader';
+  role: 'member' | 'lieutenant' | 'leader';
 }
 
 interface User {
@@ -16,44 +16,44 @@ interface User {
   role: string;
 }
 
-interface ListMembersProps {
-  members: Member[];
+interface ListmembersProps {
+  members: member[];
   error: string | null;
   loading: boolean;
   user: User | null;
   onCopyCode: (code: string) => void;
-  onDeleteMember: (id: number, name: string) => void;
+  onDeletemember: (id: number, name: string) => void;
 }
 
-export default function ListMembers({ 
+export default function Listmembers({ 
   members, 
   error, 
   loading, 
   user, 
   onCopyCode, 
-  onDeleteMember 
-}: ListMembersProps) {
+  onDeletemember 
+}: ListmembersProps) {
   const getRoleTag = (role: string) => {
     switch (role) {
-      case 'Lieutenant':
+      case 'lieutenant':
         return (
           <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
             <FontAwesomeIcon icon={faDragon} className="mr-1" />
-            Lieutenant
+            lieutenant
           </span>
         );
-      case 'Leader':
+      case 'leader':
         return (
           <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
             <FontAwesomeIcon icon={faCrown} className="mr-1" />
-            Leader
+            leader
           </span>
         );
-      case 'Member':
+      case 'member':
         return (
           <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-sm font-medium bg-green-200 text-green-800">
             <FontAwesomeIcon icon={faPersonRifle} className="mr-1" />
-            Member
+            member
           </span>
         );
       default:
@@ -63,21 +63,21 @@ export default function ListMembers({
 
   // Determine if buttons should be shown based on user role and member role
   const canCopy = (memberRole: string) => {
-    if (user?.role === 'Leader') {
-      return memberRole === 'Lieutenant' || memberRole === 'Member';
+    if (user?.role === 'leader') {
+      return memberRole === 'lieutenant' || memberRole === 'member';
     }
-    if (user?.role === 'Lieutenant') {
-      return memberRole === 'Member';
+    if (user?.role === 'lieutenant') {
+      return memberRole === 'member';
     }
     return false;
   };
 
   const canDelete = (memberRole: string) => {
-    if (user?.role === 'Leader') {
-      return memberRole === 'Lieutenant' || memberRole === 'Member';
+    if (user?.role === 'leader') {
+      return memberRole === 'lieutenant' || memberRole === 'member';
     }
-    if (user?.role === 'Lieutenant') {
-      return memberRole === 'Member';
+    if (user?.role === 'lieutenant') {
+      return memberRole === 'member';
     }
     return false;
   };
@@ -120,7 +120,7 @@ export default function ListMembers({
                 )}
                 {canDelete(member.role) && (
                   <button
-                    onClick={() => onDeleteMember(member.id, member.name)}
+                    onClick={() => onDeletemember(member.id, member.name)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <FontAwesomeIcon icon={faTrash} />

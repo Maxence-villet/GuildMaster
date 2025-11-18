@@ -102,7 +102,7 @@ export default function LandingPage() {
         <p className="text-sm text-gray-600">© 2025 GuildMaster - All Rights Reserved</p>
         <p className="text-sm text-gray-600 flex items-center justify-center mt-2">
           <FontAwesomeIcon icon={faUsers} className="text-blue-600 mr-2" />
-          Exclusive for Clan Members
+          Exclusive for Clan members
         </p>
       </footer>
     </div>

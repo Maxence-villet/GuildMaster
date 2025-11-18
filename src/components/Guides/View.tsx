@@ -29,7 +29,7 @@ export default function ViewGuide({ guide, loading, error, canDelete, onDelete }
     navigate('/login');
   }
 
-  if(user?.role === "Leader") {
+  if(user?.role === "leader") {
     canDelete = true;
   }
 

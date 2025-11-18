@@ -6,114 +6,71 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 
-interface Clan {
-    id: number;
-    name: string;
-    created_at: string;
-}
-
-interface Member {
-    id: number;
-    name: string;
-    code: string;
-    role: string;
-    clan_id: number;
-}
-
 export default function AddClan() {
     const [clanName, setClanName] = useState('');
-    const [memberName, setMemberName] = useState('');
-    const [memberCode, setMemberCode] = useState('');
+    const [leaderName, setLeaderName] = useState('');
+    const [leaderCode, setLeaderCode] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
-    const checkExistingClan = async (name: string): Promise<boolean> => {
-        try {
-            const response = await axios.get(`http://localhost:3001/api/clan/check?name=${encodeURIComponent(name)}`);
-            return response.data.exists;
-        } catch (error) {
-            console.error('Error checking clan existence:', error);
-            return false;
-        }
-    };
-
-    const checkExistingMember = async (code: string): Promise<boolean> => {
-        try {
-            const response = await axios.get(`http://localhost:3001/api/member/check?code=${encodeURIComponent(code)}`);
-            return response.data.exists;
-        } catch (error) {
-            console.error('Error checking member existence:', error);
-            return false;
-        }
-    };
 
     const handleCreateClan = async () => {
         if (!clanName.trim()) {
             toast.error('Clan name is required.');
             return;
         }
-
-        if (!memberName.trim()) {
-            toast.error('Member name is required.');
+        if (!leaderName.trim()) {
+            toast.error('Leader name is required.');
             return;
         }
-
-        if (!memberCode.trim()) {
-            toast.error('Member code is required.');
+        if (!leaderCode.trim()) {
+            toast.error('Leader code is required.');
             return;
         }
 
         setLoading(true);
+
         try {
-            // Check if clan already exists
-            const clanExists = await checkExistingClan(clanName.trim());
-            if (clanExists) {
-                toast.error('A clan with this name already exists.');
-                setLoading(false);
-                return;
-            }
+            // Single API call – creates clan + leader at the same time
+            const response = await axios.post(
+                'http://127.0.0.1:8000/clans/create',
+                null, // no body
+                {
+                    params: {
+                        clan_name: clanName.trim(),
+                        leader_name: leaderName.trim(),
+                        leader_code: leaderCode.trim(),
+                    },
+                }
+            );
 
-            // Check if member code already exists
-            const memberExists = await checkExistingMember(memberCode.trim());
-            if (memberExists) {
-                toast.error('A member with this code already exists.');
-                setLoading(false);
-                return;
-            }
-
-            // First, create the clan
-            const clanResponse = await axios.post<{ message: string; clan: Clan }>('http://localhost:3001/api/clan/add', { 
-                name: clanName.trim() 
-            });
-            
-            const clan = clanResponse.data.clan;
-            toast.success(`Clan "${clan.name}" created successfully!`);
-
-            // Then, create the first member as Leader
-            const memberResponse = await axios.post<{ message: string; member: Member }>('http://localhost:3001/api/member/add', {
-                name: memberName.trim(),
-                role: 'Leader',
-                clan_id: clan.id,
-                code: memberCode.trim()
-            });
-
-            const member = memberResponse.data.member;
-            toast.success(`Leader "${member.name}" added to clan "${clan.name}"!`);
+            const clan = response.data;
+            toast.success(`Clan "${clan.name}" created successfully! Welcome, Leader ${leaderName}!`);
 
             // Reset form
             setClanName('');
-            setMemberName('');
-            setMemberCode('');
+            setLeaderName('');
+            setLeaderCode('');
 
-            // Navigate to login page
+            // Redirect to login page
             navigate('/login');
         } catch (error: any) {
-            if (error.response && error.response.data && error.response.data.message) {
-                toast.error(error.response.data.message);
+            console.error('Error creating clan:', error);
+
+            if (error.response?.data?.detail) {
+                const msg = error.response.data.detail;
+
+                if (msg.includes('clan')) {
+                    toast.error('A clan with this name already exists.');
+                } else if (msg.includes('membre') || msg.includes('member')) {
+                    toast.error('This leader name is already taken.');
+                } else if (msg.includes('code')) {
+                    toast.error('This code is already in use.');
+                } else {
+                    toast.error(msg);
+                }
             } else {
                 toast.error('Failed to create clan. Please try again.');
             }
-            console.error('Error creating clan:', error);
         } finally {
             setLoading(false);
         }
@@ -122,53 +79,51 @@ export default function AddClan() {
     return (
         <div>
             <h2 className="text-xl sm:text-2xl font-bold text-blue-600 mb-6 text-center flex items-center justify-center gap-2">
-            <FontAwesomeIcon icon={faShieldHalved} />
-                <p>Create Clan</p>
+                <FontAwesomeIcon icon={faShieldHalved} />
+                <span>Create Clan</span>
             </h2>
+
             <div className="space-y-6">
                 <div>
-                    <p className="block text-sm font-medium text-gray-700">Clan Name</p>
+                    <label className="block text-sm font-medium text-gray-700">Clan Name</label>
                     <input
                         type="text"
-                        name="clanName"
-                        id="clanName"
                         className="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition duration-150 ease-in-out"
                         placeholder="Enter clan name..."
-                        required
                         value={clanName}
                         onChange={(e) => setClanName(e.target.value)}
                         disabled={loading}
                     />
                 </div>
+
                 <div>
-                    <p className="block text-sm font-medium text-gray-700">Leader Name</p>
+                    <label className="block text-sm font-medium text-gray-700">Leader Name</label>
                     <input
                         type="text"
-                        name="memberName"
-                        id="memberName"
                         className="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition duration-150 ease-in-out"
-                        placeholder="Enter leader name..."
-                        required
-                        value={memberName}
-                        onChange={(e) => setMemberName(e.target.value)}
+                        placeholder="Enter your leader name..."
+                        value={leaderName}
+                        onChange={(e) => setLeaderName(e.target.value)}
                         disabled={loading}
                     />
                 </div>
+
                 <div>
-                    <p className="block text-sm font-medium text-gray-700">Leader Code</p>
+                    <label className="block text-sm font-medium text-gray-700">Leader Code</label>
                     <input
                         type="password"
-                        name="memberCode"
-                        id="memberCode"
                         className="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition duration-150 ease-in-out"
-                        placeholder="Enter leader code..."
-                        required
-                        value={memberCode}
-                        onChange={(e) => setMemberCode(e.target.value)}
+                        placeholder="Choose a secret code..."
+                        value={leaderCode}
+                        onChange={(e) => setLeaderCode(e.target.value)}
                         disabled={loading}
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                        You will use this code to log in later.
+                    </p>
                 </div>
             </div>
+
             <button
                 className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out mt-5 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 onClick={handleCreateClan}
@@ -176,7 +131,18 @@ export default function AddClan() {
             >
                 {loading ? 'Creating Clan...' : 'Create Clan'}
             </button>
-            <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+
+            <ToastContainer
+                position="bottom-right"
+                autoClose={4000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </div>
     );
 }

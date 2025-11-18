@@ -40,7 +40,7 @@ export default function ViewGuidePage() {
                 return;
             }
             try {
-                const response = await axios.get<Guide>(`http://localhost:3001/api/guide/${id}`);
+                const response = await axios.get<Guide>(`http://127.0.0.1:8000/api/guide/${id}`);
                 setGuide(response.data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
@@ -55,10 +55,10 @@ export default function ViewGuidePage() {
         };
 
         fetchGuide();
-    }, [id, "http://localhost:3001/api/guide"]);
+    }, [id, "http://127.0.0.1:8000/api/guide"]);
 
     const handleDelete = async () => {
-        if(!guide || !user || user.role !== "Leader") {
+        if(!guide || !user || user.role !== "leader") {
             if (!guide || !user || guide.author_id !== user.id) {
                 toast.error("You are not authorized to delete this guide.");
                 return;
@@ -68,7 +68,7 @@ export default function ViewGuidePage() {
 
         if (window.confirm("Are you sure you want to delete this guide?")) {
             try {
-                await axios.delete(`http://localhost:3001/api/guide/delete/${guide.id}`);
+                await axios.delete(`http://127.0.0.1:8000/api/guide/delete/${guide.id}`);
                 toast.success("Guide deleted successfully!");
                 navigate("/guide/list"); 
             } catch (err) {

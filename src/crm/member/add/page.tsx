@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AddMember from "../../../components/Members/Add";
+import Addmember from "../../../components/Members/Add";
 import Header from "../../../components/Header";
 import Sidebar from "../../../components/Sidebar";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -10,19 +10,19 @@ import { getAvailableRoles } from '../../../utils/memberRoles';
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-interface Member {
+interface member {
   id: number;
   name: string;
   code: string;
-  role: 'Member' | 'Lieutenant' | 'Leader';
+  role: 'member' | 'lieutenant' | 'leader';
   clan_id: number;
   created_at: string;
 }
 
-export default function AddMemberPage() {
-    const [memberName, setMemberName] = useState('');
-    const [memberRole, setMemberRole] = useState('Member');
-    const [members, setMembers] = useState<Member[]>([]);
+export default function AddmemberPage() {
+    const [memberName, setmemberName] = useState('');
+    const [memberRole, setmemberRole] = useState('member');
+    const [members, setmembers] = useState<member[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     
@@ -37,15 +37,15 @@ export default function AddMemberPage() {
     }, [user, navigate]);
 
     // Fetch members list for the user's clan
-    const fetchMembers = async () => {
+    const fetchmembers = async () => {
         if (!user?.clan_id) {
             toast.error('User clan not found.');
             return;
         }
 
         try {
-            const response = await axios.get(`http://localhost:3001/api/member/list?clan_id=${user.clan_id}`);
-            setMembers(response.data);
+            const response = await axios.get(`http://127.0.0.1:8000/members/list?clan_id=${user.clan_id}`);
+            setmembers(response.data);
         } catch (error) {
             console.error('Error fetching members:', error);
             toast.error('Failed to fetch members list.');
@@ -56,7 +56,7 @@ export default function AddMemberPage() {
 
     useEffect(() => {
         if (user?.clan_id) {
-            fetchMembers();
+            fetchmembers();
         }
     }, [user?.clan_id]);
 
@@ -64,37 +64,37 @@ export default function AddMemberPage() {
     useEffect(() => {
         const availableRoles = getAvailableRoles(members);
         if (!availableRoles.includes(memberRole as any) && availableRoles.length > 0) {
-            setMemberRole(availableRoles[0]);
+            setmemberRole(availableRoles[0]);
         }
     }, [members, memberRole]);
 
-    const handleAddMember = async () => {
+    const handleAddmember = async () => {
         if (!user?.clan_id) {
             toast.error('User clan not found.');
             return;
         }
 
         if (!memberName.trim()) {
-            toast.error('Member name cannot be empty.');
+            toast.error('member name cannot be empty.');
             return;
         }
         if (!memberRole.trim()) {
-            toast.error('Member role cannot be empty.');
+            toast.error('member role cannot be empty.');
             return;
         }
 
         setSubmitting(true);
         try {
-            await axios.post<Member>(`http://localhost:3001/api/member/add`, { 
+            await axios.post<member>(`http://127.0.0.1:8000/members/add`, { 
                 name: memberName, 
                 role: memberRole, 
                 clan_id: user.clan_id
             });
-            toast.success(`Member ${memberName} added successfully!`);
-            setMemberName('');
-            setMemberRole('Member');
+            toast.success(`member ${memberName} added successfully!`);
+            setmemberName('');
+            setmemberRole('member');
             // Refresh the members list after adding
-            fetchMembers();
+            fetchmembers();
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 toast.error(`Error: ${error.response.data.message || 'Something went wrong.'}`);
@@ -113,8 +113,8 @@ export default function AddMemberPage() {
         return null;
     }
 
-    if(user.role === "Lieutenant") {
-        availableRoles.splice(availableRoles.indexOf("Lieutenant"), 1);
+    if(user.role === "lieutenant") {
+        availableRoles.splice(availableRoles.indexOf("lieutenant"), 1);
     }
 
     return (
@@ -128,21 +128,21 @@ export default function AddMemberPage() {
                 <div className={`flex flex-row xl:flex-row justify-between items-center mb-4 gap-4`}>
                     <h2 className={`text-2xl font-bold flex items-center gap-2 w-full`}>
                         <FontAwesomeIcon icon={faPlus} className="text-blue-600" />
-                        <span>Add Member</span>
+                        <span>Add member</span>
                     </h2>
                 </div>
                 <div className="w-full mt-4">
                         <Toaster />
-                        <AddMember
+                        <Addmember
                             memberName={memberName}
                             memberRole={memberRole}
                             availableRoles={availableRoles}
                             members={members}
                             loading={loading}
                             submitting={submitting}
-                            onNameChange={(e) => setMemberName(e.target.value)}
-                            onRoleChange={(e) => setMemberRole(e.target.value)}
-                            onSubmit={handleAddMember}
+                            onNameChange={(e) => setmemberName(e.target.value)}
+                            onRoleChange={(e) => setmemberRole(e.target.value)}
+                            onSubmit={handleAddmember}
                         />
                     </div>
                 </main>

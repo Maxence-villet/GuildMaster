@@ -44,13 +44,13 @@ export default function ListGuidePage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (user?.role === "Leader") {
+        if (user?.role === "leader") {
             setCanAddGuide(true);
         }
-        if (user?.role === "Lieutenant") {
+        if (user?.role === "lieutenant") {
             setCanAddGuide(true);
         }
-        if (user?.role === "Member") {
+        if (user?.role === "member") {
             setCanAddGuide(false);
         }
     }, [user]);
@@ -74,7 +74,7 @@ export default function ListGuidePage() {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get<GuidesResponse>(`http://localhost:3001/api/guide/list?clan_id=${user?.clan_id}&page=${currentPage}`);
+                const response = await axios.get<GuidesResponse>(`http://127.0.0.1:8000/api/guide/list?clan_id=${user?.clan_id}&page=${currentPage}`);
                 setGuides(response.data.guides);
                 setPagination(response.data.pagination);
             } catch (err) {

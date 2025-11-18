@@ -35,12 +35,12 @@ export default function Header() {
     { path: "/guide/list", icon: faTachometerAlt, label: "All Guides" },
   ];
 
-  if(user.role === "Leader") {
+  if(user.role === "leader") {
     navItems.push({ path: "/guide/add", icon: faPlus, label: "Add Guide" });
     navItems.push({ path: "/member/list", icon: faUserGear, label: "Manage members"})
   }
 
-  if(user.role === "Lieutenant") {
+  if(user.role === "lieutenant") {
     navItems.push({ path: "/member/list", icon: faUserGear, label: "Manage members"})
   }
 

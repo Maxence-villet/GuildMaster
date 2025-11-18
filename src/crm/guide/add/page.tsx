@@ -8,8 +8,10 @@ import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useRoleGuard } from '../../../hooks/useRoleGuard';
 
 export default function AddGuidePage() {
+    useRoleGuard();
     const [title, setTitle] = useState('');
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);

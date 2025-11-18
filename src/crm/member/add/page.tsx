@@ -9,6 +9,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { getAvailableRoles } from '../../../utils/memberRoles';
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useRoleGuard } from '../../../hooks/useRoleGuard';
 
 interface member {
   id: number;
@@ -20,133 +21,89 @@ interface member {
 }
 
 export default function AddmemberPage() {
-    const [memberName, setmemberName] = useState('');
-    const [memberRole, setmemberRole] = useState('member');
-    const [members, setmembers] = useState<member[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
-    
-    const { user } = useAuth();
-    const navigate = useNavigate();
+  useRoleGuard();
 
-    useEffect(() => {
-        if (!user) {
-            navigate("/login");
-            return;
-        }
-    }, [user, navigate]);
+  const [memberName, setmemberName] = useState('');
+  const [memberRole, setmemberRole] = useState('member');
+  const [members, setmembers] = useState<member[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-    // Fetch members list for the user's clan
-    const fetchmembers = async () => {
-        if (!user?.clan_id) {
-            toast.error('User clan not found.');
-            return;
-        }
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-        try {
-            const response = await axios.get(`http://127.0.0.1:8000/members/list?clan_id=${user.clan_id}`);
-            setmembers(response.data);
-        } catch (error) {
-            console.error('Error fetching members:', error);
-            toast.error('Failed to fetch members list.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (user?.clan_id) {
-            fetchmembers();
-        }
-    }, [user?.clan_id]);
-
-    // Update memberRole if current selection is no longer available
-    useEffect(() => {
-        const availableRoles = getAvailableRoles(members);
-        if (!availableRoles.includes(memberRole as any) && availableRoles.length > 0) {
-            setmemberRole(availableRoles[0]);
-        }
-    }, [members, memberRole]);
-
-    const handleAddmember = async () => {
-        if (!user?.clan_id) {
-            toast.error('User clan not found.');
-            return;
-        }
-
-        if (!memberName.trim()) {
-            toast.error('member name cannot be empty.');
-            return;
-        }
-        if (!memberRole.trim()) {
-            toast.error('member role cannot be empty.');
-            return;
-        }
-
-        setSubmitting(true);
-        try {
-            await axios.post<member>(`http://127.0.0.1:8000/members/add`, { 
-                name: memberName, 
-                role: memberRole, 
-                clan_id: user.clan_id
-            });
-            toast.success(`member ${memberName} added successfully!`);
-            setmemberName('');
-            setmemberRole('member');
-            // Refresh the members list after adding
-            fetchmembers();
-        } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                toast.error(`Error: ${error.response.data.message || 'Something went wrong.'}`);
-            } else {
-                toast.error('An unexpected error occurred.');
-            }
-            console.error('Error adding member:', error);
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const availableRoles = getAvailableRoles(members);
-
-    if (!user) {
-        return null;
+  const fetchmembers = async () => {
+    if (!user?.clan_id) return;
+    try {
+      const res = await axios.get(`http://127.0.0.1:8000/members/list?clan_id=${user.clan_id}`);
+      setmembers(res.data);
+    } catch (err) {
+      toast.error("Impossible de charger la liste");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    if(user.role === "lieutenant") {
-        availableRoles.splice(availableRoles.indexOf("lieutenant"), 1);
+  useEffect(() => {
+    if (user?.clan_id) fetchmembers();
+  }, [user?.clan_id]);
+
+  useEffect(() => {
+    const available = getAvailableRoles(members);
+    if (!available.includes(memberRole as any) && available.length > 0) {
+      setmemberRole(available[0]);
     }
+  }, [members, memberRole]);
 
-    return (
-        <div className="flex flex-col h-screen w-full">
-        <Header />
-        <div className="flex flex-row h-screen w-full">
-            <div className="hidden xl:block">
-                <Sidebar />
-            </div>
-            <main className={`flex-1 w-full p-2 xl:p-8 max-w-screen-lg mx-auto w-[90%]`}>
-                <div className={`flex flex-row xl:flex-row justify-between items-center mb-4 gap-4`}>
-                    <h2 className={`text-2xl font-bold flex items-center gap-2 w-full`}>
-                        <FontAwesomeIcon icon={faPlus} className="text-blue-600" />
-                        <span>Add member</span>
-                    </h2>
-                </div>
-                <div className="w-full mt-4">
-                        <Toaster />
-                        <Addmember
-                            memberName={memberName}
-                            memberRole={memberRole}
-                            availableRoles={availableRoles}
-                            members={members}
-                            loading={loading}
-                            submitting={submitting}
-                            onNameChange={(e) => setmemberName(e.target.value)}
-                            onRoleChange={(e) => setmemberRole(e.target.value)}
-                            onSubmit={handleAddmember}
-                        />
-                    </div>
-                </main>
-            </div>
-        </div>
-    )
+  const handleAddmember = async () => {
+    if (!memberName.trim()) return toast.error("Nom requis");
+    setSubmitting(true);
+    try {
+      await axios.post(`http://127.0.0.1:8000/members/add`, {
+        name: memberName,
+        role: memberRole,
+        clan_id: user!.clan_id,
+      });
+      toast.success(`${memberName} ajouté !`);
+      setmemberName('');
+      fetchmembers();
+    } catch (err: any) {
+      toast.error(err.response?.data?.detail || "Erreur");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!user || user.role !== "leader") return null;
+
+  const availableRoles = getAvailableRoles(members);
+
+  return (
+    <div className="flex flex-col h-screen w-full">
+      <Header />
+      <div className="flex flex-row h-screen w-full">
+        <div className="hidden xl:block"><Sidebar /></div>
+        <main className="flex-1 p-2 xl:p-8 max-w-screen-lg mx-auto w-[90%]">
+          <h2 className="text-2xl font-bold flex items-center gap-2 mb-4">
+            <FontAwesomeIcon icon={faPlus} className="text-blue-600" />
+            Ajouter un membre
+          </h2>
+          <div className="w-full mt-4">
+            <Toaster />
+            <Addmember
+              memberName={memberName}
+              memberRole={memberRole}
+              availableRoles={availableRoles}
+              members={members}
+              loading={loading}
+              submitting={submitting}
+              onNameChange={e => setmemberName(e.target.value)}
+              onRoleChange={e => setmemberRole(e.target.value)}
+              onSubmit={handleAddmember}
+            />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }

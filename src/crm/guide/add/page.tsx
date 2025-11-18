@@ -31,7 +31,7 @@ export default function AddGuidePage() {
 
         setLoading(true);
         try {
-            await axios.post(`http://127.0.0.1:8000/api/guide/add`, { title, author_id: user.id, text });
+            await axios.post(`http://127.0.0.1:8000/guides/add`, { title, author_id: user.id, text });
             toast.success('Guide added successfully!');
             setTitle('');
             setText('');

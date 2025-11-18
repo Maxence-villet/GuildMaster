@@ -7,7 +7,7 @@ interface Guide {
   id: number;
   title: string;
   author_id: number;
-  authorName: string;
+  author_name: string;
   text: string;
   created_at: string;
 }
@@ -62,7 +62,7 @@ export default function ViewGuide({ guide, loading, error, canDelete, onDelete }
           </button>
         )}
       </div>
-      <p className="text-gray-600 text-sm mb-2">By {guide.authorName}</p>
+      <p className="text-gray-600 text-sm mb-2">By {guide.author_name}</p>
       <p className="text-gray-600 text-sm mb-4">Posted on {new Date(guide.created_at).toLocaleString()}</p>
       <div className="text-black leading-relaxed overflow-y-auto h-64 whitespace-pre-wrap">
         {guide.text}

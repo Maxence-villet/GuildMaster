@@ -216,7 +216,7 @@ export default function Login() {
                   value={codePassword}
                   onChange={(e) => setCodePassword(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  placeholder="Minimum 6 characters"
+                  placeholder="Minimum 12 characters"
                   disabled={loading}
                 />
               </div>

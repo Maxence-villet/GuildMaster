@@ -30,18 +30,19 @@ export default function AddClan() {
         setLoading(true);
 
         try {
-            // Single API call – creates clan + leader at the same time
+   
             const response = await axios.post(
-                'http://127.0.0.1:8000/clans/create',
-                null, // no body
-                {
-                    params: {
-                        clan_name: clanName.trim(),
-                        leader_name: leaderName.trim(),
-                        leader_code: leaderCode.trim(),
-                    },
-                }
-            );
+            'http://127.0.0.1:8000/clans/create',
+            null, 
+            {
+                params: {
+                    clan_name: clanName.trim(),
+                    leader_name: leaderName.trim(),
+                    leader_code: leaderCode.trim(),
+                },
+            }
+        );
+
 
             const clan = response.data;
             toast.success(`Clan "${clan.name}" created successfully! Welcome, Leader ${leaderName}!`);

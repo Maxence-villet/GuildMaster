@@ -1,6 +1,8 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { appRoutes } from './config/router';
 import { AuthProvider } from './context/AuthContext';
+import axios from "axios";
+axios.defaults.withCredentials = true;
 
 function App() {
 

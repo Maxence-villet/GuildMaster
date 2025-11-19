@@ -36,28 +36,28 @@ export default function Sidebar() {
         return null;
     }
 
-    const canManageMembers = ["Leader", "Lieutenant"].includes(user.role);
-    const canAddGuide = ["Leader", "Lieutenant"].includes(user.role);
+    const canManagemembers = ["leader", "lieutenant"].includes(user.role);
+    const canAddGuide = ["leader", "lieutenant"].includes(user.role);
 
 
     const getRoleColor = (role: string) => {
-        if (role === "Leader") return "bg-yellow-500";
-        if (role === "Lieutenant") return "bg-red-500";
-        if (role === "Member") return "bg-green-500";
+        if (role === "leader") return "bg-yellow-500";
+        if (role === "lieutenant") return "bg-red-500";
+        if (role === "member") return "bg-green-500";
         return "bg-gray-600";
     }
 
     const getRoleIcon = (role: string) => {
-        if (role === "Leader") return faCrown;
-        if (role === "Lieutenant") return faDragon;
-        if (role === "Member") return faPersonRifle;
+        if (role === "leader") return faCrown;
+        if (role === "lieutenant") return faDragon;
+        if (role === "member") return faPersonRifle;
         return faUser;
     }
 
     const getRoleIconColor = (role: string) => {
-        if (role === "Leader") return "text-yellow-300";
-        if (role === "Lieutenant") return "text-red-300";
-        if (role === "Member") return "text-green-300";
+        if (role === "leader") return "text-yellow-300";
+        if (role === "lieutenant") return "text-red-300";
+        if (role === "member") return "text-green-300";
         return "text-gray-500";
     }
     
@@ -102,7 +102,7 @@ export default function Sidebar() {
                                     </div>
                                 </li>
                             )}
-                            {canManageMembers && (
+                            {canManagemembers && (
                                 <li>
                                     <div 
                                         onClick={() => navigate('/member/list')} 

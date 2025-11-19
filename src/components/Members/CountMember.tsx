@@ -2,22 +2,22 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDragon, faCrown, faUsers } from '@fortawesome/free-solid-svg-icons';
 
-interface Member {
+interface member {
   id: number;
   name: string;
   code: string;
-  role: 'Member' | 'Lieutenant' | 'Leader';
+  role: 'member' | 'lieutenant' | 'leader';
 }
 
 interface CountMemberProps {
-  members: Member[];
+  members: member[];
 }
 
 export default function CountMember({ members }: CountMemberProps) {
   // Calculate role statistics
   const getRoleStats = () => {
-    const leaderCount = members.filter(member => member.role === 'Leader').length;
-    const lieutenantCount = members.filter(member => member.role === 'Lieutenant').length;
+    const leaderCount = members.filter(member => member.role === 'leader').length;
+    const lieutenantCount = members.filter(member => member.role === 'lieutenant').length;
     const totalCount = members.length;
     
     return {
@@ -31,19 +31,19 @@ export default function CountMember({ members }: CountMemberProps) {
 
   return (
     <div className="flex flex-wrap gap-3 mb-4">
-      {/* Leader Stats */}
+      {/* leader Stats */}
       <div className="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
         <FontAwesomeIcon icon={faCrown} className="mr-2" />
-        Leader: {roleStats.leader.current}/{roleStats.leader.max}
+        leader: {roleStats.leader.current}/{roleStats.leader.max}
       </div>
       
-      {/* Lieutenant Stats */}
+      {/* lieutenant Stats */}
       <div className="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium bg-red-100 text-red-800">
         <FontAwesomeIcon icon={faDragon} className="mr-2" />
-        Lieutenant: {roleStats.lieutenant.current}/{roleStats.lieutenant.max}
+        lieutenant: {roleStats.lieutenant.current}/{roleStats.lieutenant.max}
       </div>
       
-      {/* Total Members Stats */}
+      {/* Total members Stats */}
       <div className="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
         <FontAwesomeIcon icon={faUsers} className="mr-2" />
         Total: {roleStats.total.current}/{roleStats.total.max}

@@ -10,10 +10,10 @@ import toast, { Toaster } from 'react-hot-toast';
 interface Guide {
   id: number;
   title: string;
-  author_id: number;
-  authorName: string;
   text: string;
+  author_id: number;
   created_at: string;
+  author_name: string;
 }
 
 export default function ViewGuidePage() {
@@ -40,7 +40,7 @@ export default function ViewGuidePage() {
                 return;
             }
             try {
-                const response = await axios.get<Guide>(`https://guildmaster-backend.onrender.com/api/guide/${id}`);
+                const response = await axios.get<Guide>(`http://127.0.0.1:8000/guides/${id}`);
                 setGuide(response.data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
@@ -55,17 +55,20 @@ export default function ViewGuidePage() {
         };
 
         fetchGuide();
-    }, [id, "https://guildmaster-backend.onrender.com/api/guide"]);
+    }, [id, "http://127.0.0.1:8000/guides"]);
 
     const handleDelete = async () => {
-        if (!guide || !user || guide.author_id !== user.id) {
-            toast.error("You are not authorized to delete this guide.");
-            return;
+        if(!guide || !user || user.role !== "leader") {
+            if (!guide || !user || guide.author_id !== user.id) {
+                toast.error("You are not authorized to delete this guide.");
+                return;
+            }
         }
+        
 
         if (window.confirm("Are you sure you want to delete this guide?")) {
             try {
-                await axios.delete(`https://guildmaster-backend.onrender.com/api/guide/delete/${guide.id}`);
+                await axios.delete(`http://127.0.0.1:8000/guides/delete/${guide.id}`);
                 toast.success("Guide deleted successfully!");
                 navigate("/guide/list"); 
             } catch (err) {

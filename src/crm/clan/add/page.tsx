@@ -1,11 +1,8 @@
-import { useState } from "react";
 import AddClan from "../../../components/Clans/Add";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../../../components/Navbar";
 
 
 export default function AddClanPage() {
-    const navigate = useNavigate();
     return (
         <>
         <Navbar />

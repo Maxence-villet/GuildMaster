@@ -2,25 +2,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Header from "../../../components/Header";
 import Sidebar from "../../../components/Sidebar";
 import { faList, faPlus } from "@fortawesome/free-solid-svg-icons";
-import ListMembers from "../../../components/Members/List";
+import Listmembers from "../../../components/Members/List";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../../context/AuthContext';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
-interface Member {
+interface member {
   id: number;
   name: string;
   code: string;
-  role: 'Member' | 'Lieutenant' | 'Leader';
+  role: 'member' | 'lieutenant' | 'leader';
   clan_id: number;
 }
 
-export default function ListMembersPage() {
+export default function ListmembersPage() {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isDesktop, setIsDesktop] = useState(windowWidth > 1279);
-    const [members, setMembers] = useState<Member[]>([]);
+    const [members, setmembers] = useState<member[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +44,7 @@ export default function ListMembersPage() {
         }
     }, [user, navigate]);
 
-    const fetchMembers = async () => {
+    const fetchmembers = async () => {
         if (!user?.clan_id) {
             setError("User clan not found.");
             setLoading(false);
@@ -52,8 +52,8 @@ export default function ListMembersPage() {
         }
 
         try {
-            const response = await axios.get(`https://guildmaster-backend.onrender.com/api/member/list?clan_id=${user.clan_id}`);
-            setMembers(response.data);
+            const response = await axios.get(`http://127.0.0.1:8000/members/list?clan_id=${user.clan_id}`);
+            setmembers(response.data);
         } catch (err) {
             setError("Failed to fetch members. Please try again later.");
             console.error("Error fetching members:", err);
@@ -65,7 +65,7 @@ export default function ListMembersPage() {
 
     useEffect(() => {
         if (user?.clan_id) {
-            fetchMembers();
+            fetchmembers();
         }
     }, [user?.clan_id]);
 
@@ -78,7 +78,7 @@ export default function ListMembersPage() {
         });
     };
 
-    const handleDeleteMember = async (memberId: number, memberName: string) => {
+    const handleDeletemember = async (memberId: number, memberName: string) => {
         if (!window.confirm(`Are you sure you want to delete ${memberName}?`)) {
             return;
         }
@@ -89,9 +89,9 @@ export default function ListMembersPage() {
         }
 
         try {
-            await axios.delete(`https://guildmaster-backend.onrender.com/api/member/delete/${memberId}?clan_id=${user.clan_id}`);
-            toast.success(`Member ${memberName} deleted successfully!`);
-            fetchMembers();
+            await axios.delete(`http://127.0.0.1:8000/members/delete/${memberId}?clan_id=${user.clan_id}`);
+            toast.success(`member ${memberName} deleted successfully!`);
+            fetchmembers();
         } catch (err: any) {
             console.error(`Error deleting member ${memberName}:`, err);
             toast.error(`Failed to delete member ${memberName}: ${err.message}`);
@@ -117,7 +117,7 @@ export default function ListMembersPage() {
                     <div className={`flex flex-row xl:flex-row justify-between items-center mb-4 gap-4`}>
                         <h2 className={`text-2xl font-bold flex items-center gap-2 w-full`}>
                             <FontAwesomeIcon icon={faList} className="text-blue-600" />
-                            <span>List of Members</span>
+                            <span>List of members</span>
                         </h2>
                         <div className="flex items-center gap-2 w-full justify-end mt-2 xl:mt-0">
                             <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out flex items-center gap-2 w-auto" onClick={handleClick}>
@@ -128,13 +128,13 @@ export default function ListMembersPage() {
                     </div>
                     <div className="w-full mt-4">
                         <Toaster />
-                        <ListMembers
+                        <Listmembers
                             members={members}
                             error={error}
                             loading={loading}
                             user={user}
                             onCopyCode={handleCopyCode}
-                            onDeleteMember={handleDeleteMember}
+                            onDeletemember={handleDeletemember}
                         />
                     </div>
                 </main>

@@ -3,6 +3,7 @@ import { appRoutes } from './config/router';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
+
   return (
     <div className="App bg-gray-50 h-screen">
       <AuthProvider>

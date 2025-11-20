@@ -7,8 +7,10 @@ export const useRoleGuard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const FORBIDDEN_PATH = "/403"; 
 
   useEffect(() => {
+
     if (!user) {
       navigate("/login", { replace: true });
       return;
@@ -31,7 +33,7 @@ export const useRoleGuard = () => {
           position: "top-center",
           style: { background: "#991b1b", color: "white" }
         });
-        navigate("/guide/list", { replace: true });
+        navigate(FORBIDDEN_PATH, { replace: true }); 
       }
     }
 
@@ -39,7 +41,7 @@ export const useRoleGuard = () => {
       const path = location.pathname.toLowerCase();
       if (path.includes("/member/add") || path.includes("/members/add")) {
         toast.error("Seul le leader peut ajouter des membres");
-        navigate("/guide/list", { replace: true });
+        navigate(FORBIDDEN_PATH, { replace: true });
       }
     }
 

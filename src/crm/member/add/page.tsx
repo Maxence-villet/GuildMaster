@@ -9,6 +9,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { getAvailableRoles } from '../../../utils/memberRoles';
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useRoleGuard } from '../../../hooks/useRoleGuard';
 
 interface member {
   id: number;
@@ -20,53 +21,39 @@ interface member {
 }
 
 export default function AddmemberPage() {
-    const [memberName, setmemberName] = useState('');
-    const [memberRole, setmemberRole] = useState('member');
-    const [members, setmembers] = useState<member[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
-    
-    const { user } = useAuth();
-    const navigate = useNavigate();
+  useRoleGuard();
 
-    useEffect(() => {
-        if (!user) {
-            navigate("/login");
-            return;
-        }
-    }, [user, navigate]);
+  const [memberName, setmemberName] = useState('');
+  const [memberRole, setmemberRole] = useState('member');
+  const [members, setmembers] = useState<member[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-    // Fetch members list for the user's clan
-    const fetchmembers = async () => {
-        if (!user?.clan_id) {
-            toast.error('User clan not found.');
-            return;
-        }
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-        try {
-            const response = await axios.get(`http://127.0.0.1:8000/members/list?clan_id=${user.clan_id}`);
-            setmembers(response.data);
-        } catch (error) {
-            console.error('Error fetching members:', error);
-            toast.error('Failed to fetch members list.');
-        } finally {
-            setLoading(false);
-        }
-    };
+  const fetchmembers = async () => {
+    if (!user?.clan_id) return;
+    try {
+      const res = await axios.get(`http://127.0.0.1:8000/members/list?clan_id=${user.clan_id}`);
+      setmembers(res.data);
+    } catch (err) {
+      toast.error("Impossible de charger la liste");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        if (user?.clan_id) {
-            fetchmembers();
-        }
-    }, [user?.clan_id]);
+  useEffect(() => {
+    if (user?.clan_id) fetchmembers();
+  }, [user?.clan_id]);
 
-    // Update memberRole if current selection is no longer available
-    useEffect(() => {
-        const availableRoles = getAvailableRoles(members);
-        if (!availableRoles.includes(memberRole as any) && availableRoles.length > 0) {
-            setmemberRole(availableRoles[0]);
-        }
-    }, [members, memberRole]);
+  useEffect(() => {
+    const available = getAvailableRoles(members);
+    if (!available.includes(memberRole as any) && available.length > 0) {
+      setmemberRole(available[0]);
+    }
+  }, [members, memberRole]);
 
     const handleAddmember = async () => {
         if (!user?.clan_id) {
@@ -89,12 +76,7 @@ export default function AddmemberPage() {
                 name: memberName, 
                 role: memberRole, 
                 clan_id: user.clan_id
-            }, 
-  {
-    headers: {
-      "X-CSRF-Token": window._csrfToken! 
-    }
-  });
+            });
             toast.success(`member ${memberName} added successfully!`);
             setmemberName('');
             setmemberRole('member');
@@ -112,46 +94,34 @@ export default function AddmemberPage() {
         }
     };
 
-    const availableRoles = getAvailableRoles(members);
+  const availableRoles = getAvailableRoles(members);
 
-    if (!user) {
-        return null;
-    }
-
-    if(user.role === "lieutenant") {
-        availableRoles.splice(availableRoles.indexOf("lieutenant"), 1);
-    }
-
-    return (
-        <div className="flex flex-col h-screen w-full">
-        <Header />
-        <div className="flex flex-row h-screen w-full">
-            <div className="hidden xl:block">
-                <Sidebar />
-            </div>
-            <main className={`flex-1 w-full p-2 xl:p-8 max-w-screen-lg mx-auto w-[90%]`}>
-                <div className={`flex flex-row xl:flex-row justify-between items-center mb-4 gap-4`}>
-                    <h2 className={`text-2xl font-bold flex items-center gap-2 w-full`}>
-                        <FontAwesomeIcon icon={faPlus} className="text-blue-600" />
-                        <span>Add member</span>
-                    </h2>
-                </div>
-                <div className="w-full mt-4">
-                        <Toaster />
-                        <Addmember
-                            memberName={memberName}
-                            memberRole={memberRole}
-                            availableRoles={availableRoles}
-                            members={members}
-                            loading={loading}
-                            submitting={submitting}
-                            onNameChange={(e) => setmemberName(e.target.value)}
-                            onRoleChange={(e) => setmemberRole(e.target.value)}
-                            onSubmit={handleAddmember}
-                        />
-                    </div>
-                </main>
-            </div>
-        </div>
-    )
+  return (
+    <div className="flex flex-col h-screen w-full">
+      <Header />
+      <div className="flex flex-row h-screen w-full">
+        <div className="hidden xl:block"><Sidebar /></div>
+        <main className="flex-1 p-2 xl:p-8 max-w-screen-lg mx-auto w-[90%]">
+          <h2 className="text-2xl font-bold flex items-center gap-2 mb-4">
+            <FontAwesomeIcon icon={faPlus} className="text-blue-600" />
+            Ajouter un membre
+          </h2>
+          <div className="w-full mt-4">
+            <Toaster />
+            <Addmember
+              memberName={memberName}
+              memberRole={memberRole}
+              availableRoles={availableRoles}
+              members={members}
+              loading={loading}
+              submitting={submitting}
+              onNameChange={e => setmemberName(e.target.value)}
+              onRoleChange={e => setmemberRole(e.target.value)}
+              onSubmit={handleAddmember}
+            />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }

@@ -36,13 +36,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('user');
 
     await axios.post(
-        "http://127.0.0.1:8000/logout",
+        "https://guildmaster-backend-fastapi.onrender.com/logout",
         {}, // body vide
         {
             headers: {
                 "X-CSRF-Token": window._csrfToken!
-            },
-            withCredentials: true
+            }
         }
     );
     // Optionnel : supprimer aussi le token en mémoire côté front

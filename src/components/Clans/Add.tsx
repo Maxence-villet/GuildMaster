@@ -32,7 +32,7 @@ export default function AddClan() {
         try {
    
             const response = await axios.post(
-            'http://127.0.0.1:8000/clans/create',
+            'https://guildmaster-backend-fastapi.onrender.com/clans/create',
             null, 
             {
                 params: {

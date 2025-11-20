@@ -35,7 +35,7 @@ export default function AddmemberPage() {
   const fetchmembers = async () => {
     if (!user?.clan_id) return;
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/members/list?clan_id=${user.clan_id}`);
+      const res = await axios.get(`https://guildmaster-backend-fastapi.onrender.com/members/list?clan_id=${user.clan_id}`);
       setmembers(res.data);
     } catch (err) {
       toast.error("Impossible de charger la liste");
@@ -72,7 +72,7 @@ export default function AddmemberPage() {
 
         setSubmitting(true);
         try {
-            await axios.post<member>(`http://127.0.0.1:8000/members/add`, { 
+            await axios.post<member>(`https://guildmaster-backend-fastapi.onrender.com/members/add`, { 
                 name: memberName, 
                 role: memberRole, 
                 clan_id: user.clan_id

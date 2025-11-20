@@ -37,9 +37,9 @@ export const useRoleGuard = () => {
       }
     }
 
-    if (user.role === "lieutenant") {
+    if (user.role === "membre") {
       const path = location.pathname.toLowerCase();
-      if (path.includes("/member/add") || path.includes("/members/add")) {
+      if (path.includes("/guide/add") || path.includes("/clan/add") || path.includes("/member/add")) {
         toast.error("Seul le leader peut ajouter des membres");
         navigate(FORBIDDEN_PATH);
       }

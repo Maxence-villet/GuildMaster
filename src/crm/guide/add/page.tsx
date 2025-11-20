@@ -34,7 +34,7 @@ export default function AddGuidePage() {
         setLoading(true);
         try {
             await axios.post(
-  "http://127.0.0.1:8000/guides/add",
+  "https://guildmaster-backend-fastapi.onrender.com/guides/add",
   { title, author_id: user.id, text }, // body
   {
     headers: { "X-CSRF-Token": window._csrfToken! }

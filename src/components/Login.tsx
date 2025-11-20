@@ -62,7 +62,7 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const res = await axios.post<FirstLoginResponse>('http://127.0.0.1:8000/members/login', {
+      const res = await axios.post<FirstLoginResponse>('https://guildmaster-backend-fastapi.onrender.com/members/login', {
         code: code.trim(),
       });
     const csrfToken = res.data.csrf_token;
@@ -92,7 +92,7 @@ export default function Login() {
 
     setLoading(true);
     try {
-      await axios.post('http://127.0.0.1:8000/members/set-password', {
+      await axios.post('https://guildmaster-backend-fastapi.onrender.com/members/set-password', {
         code: code.trim(),
         password: codePassword,
       });
@@ -115,7 +115,7 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const res = await axios.post<FullmemberResponse>('http://127.0.0.1:8000/members/login-password', {
+      const res = await axios.post<FullmemberResponse>('https://guildmaster-backend-fastapi.onrender.com/members/login-password', {
         name: currentmember.name,
         password: codePassword,
       });
@@ -140,7 +140,7 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const res = await axios.post<FullmemberResponse>('http://127.0.0.1:8000/members/login-password', {
+      const res = await axios.post<FullmemberResponse>('https://guildmaster-backend-fastapi.onrender.com/members/login-password', {
         name: name.trim(),
         password: loginPassword,
       });
@@ -158,7 +158,7 @@ export default function Login() {
 
   const completeLogin = async (member: FullmemberResponse | FirstLoginResponse) => {
     try {
-      const clanRes = await axios.get<Clan>(`http://127.0.0.1:8000/clans/${member.clan_id}`);
+      const clanRes = await axios.get<Clan>(`https://guildmaster-backend-fastapi.onrender.com/clans/${member.clan_id}`);
       const fullUser = {
         id: member.id,
         name: member.name,

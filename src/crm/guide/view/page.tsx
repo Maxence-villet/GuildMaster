@@ -40,7 +40,7 @@ export default function ViewGuidePage() {
                 return;
             }
             try {
-                const response = await axios.get<Guide>(`http://127.0.0.1:8000/guides/${id}`);
+                const response = await axios.get<Guide>(`https://guildmaster-backend-fastapi.onrender.com/guides/${id}`);
                 setGuide(response.data);
             } catch (err) {
                 if (axios.isAxiosError(err) && err.response) {
@@ -55,7 +55,7 @@ export default function ViewGuidePage() {
         };
 
         fetchGuide();
-    }, [id, "http://127.0.0.1:8000/guides"]);
+    }, [id, "https://guildmaster-backend-fastapi.onrender.com/guides"]);
 
     const handleDelete = async () => {
         if(!guide || !user || user.role !== "leader") {
@@ -69,7 +69,7 @@ export default function ViewGuidePage() {
         if (window.confirm("Are you sure you want to delete this guide?")) {
             try {
                 await axios.delete(
-                    `http://127.0.0.1:8000/guides/delete/${guide.id}`, 
+                    `https://guildmaster-backend-fastapi.onrender.com/guides/delete/${guide.id}`, 
                     {
                         headers: { "X-CSRF-Token": window._csrfToken! }
                     });

@@ -54,7 +54,7 @@ export default function ListmembersPage() {
         }
 
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/members/list?clan_id=${user.clan_id}`);
+            const response = await axios.get(`https://guildmaster-backend-fastapi.onrender.com/members/list?clan_id=${user.clan_id}`);
             setmembers(response.data);
         } catch (err) {
             setError("Failed to fetch members. Please try again later.");
@@ -91,7 +91,7 @@ export default function ListmembersPage() {
         }
 
         try {
-            await axios.delete(`http://127.0.0.1:8000/members/delete/${memberId}?clan_id=${user.clan_id}`,
+            await axios.delete(`https://guildmaster-backend-fastapi.onrender.com/members/delete/${memberId}?clan_id=${user.clan_id}`,
                 {
                     headers: { "X-CSRF-Token": window._csrfToken! }
                 });

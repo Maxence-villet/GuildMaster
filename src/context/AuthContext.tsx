@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+import axios from 'axios';
 
 interface User {
     id: number;
@@ -30,10 +31,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(userData));
     };
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('user');
-    };
+    const logout = async () => {
+    setUser(null);
+    localStorage.removeItem('user');
+
+    await axios.post(
+        "http://127.0.0.1:8000/logout",
+        {}, // body vide
+        {
+            headers: {
+                "X-CSRF-Token": window._csrfToken!
+            },
+            withCredentials: true
+        }
+    );
+    // Optionnel : supprimer aussi le token en mémoire côté front
+    window._csrfToken = undefined;
+};
+
 
     return (
         <AuthContext.Provider value={{ user, login, logout }}>

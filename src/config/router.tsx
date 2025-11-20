@@ -5,6 +5,7 @@ import ListmembersPage from "../crm/member/list/page";
 import AddmemberPage from "../crm/member/add/page";
 import ViewGuidePage from "../crm/guide/view/page";
 import Error404Page from "../crm/error404/page";
+import Error403Page from "../crm/error403/page";
 import LandingPage from "../crm/landing/page";
 import AddClanPage from "../crm/clan/add/page";
 
@@ -41,12 +42,16 @@ export const appRoutes = [
         path: "/guide/view/:id",
         element: <ViewGuidePage />
     },
-        {
-        path: "*",
-        element: <Error404Page />
-    },
     {
         path: "/clan/add",
         element: <AddClanPage />
+    },
+    {
+        path: "/403",
+        element: <Error403Page />
+    },
+    {
+        path: "*",
+        element: <Error404Page />
     }
 ];

@@ -1,8 +1,10 @@
 import AddClan from "../../../components/Clans/Add";
 import Navbar from "../../../components/Navbar";
+import { useRoleGuard } from '../../../hooks/useRoleGuard';
 
 
 export default function AddClanPage() {
+    useRoleGuard();
     return (
         <>
         <Navbar />

@@ -68,7 +68,11 @@ export default function ViewGuidePage() {
 
         if (window.confirm("Are you sure you want to delete this guide?")) {
             try {
-                await axios.delete(`http://127.0.0.1:8000/guides/delete/${guide.id}`);
+                await axios.delete(
+                    `http://127.0.0.1:8000/guides/delete/${guide.id}`, 
+                    {
+                        headers: { "X-CSRF-Token": window._csrfToken! }
+                    });
                 toast.success("Guide deleted successfully!");
                 navigate("/guide/list"); 
             } catch (err) {

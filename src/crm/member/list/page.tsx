@@ -3,10 +3,11 @@ import Header from "../../../components/Header";
 import Sidebar from "../../../components/Sidebar";
 import { faList, faPlus } from "@fortawesome/free-solid-svg-icons";
 import Listmembers from "../../../components/Members/List";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../../context/AuthContext';
 import axios from 'axios';
+import { useRoleGuard } from '../../../hooks/useRoleGuard';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface member {
@@ -18,6 +19,7 @@ interface member {
 }
 
 export default function ListmembersPage() {
+    useRoleGuard();
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isDesktop, setIsDesktop] = useState(windowWidth > 1279);
     const [members, setmembers] = useState<member[]>([]);
@@ -89,7 +91,10 @@ export default function ListmembersPage() {
         }
 
         try {
-            await axios.delete(`http://127.0.0.1:8000/members/delete/${memberId}?clan_id=${user.clan_id}`);
+            await axios.delete(`http://127.0.0.1:8000/members/delete/${memberId}?clan_id=${user.clan_id}`,
+                {
+                    headers: { "X-CSRF-Token": window._csrfToken! }
+                });
             toast.success(`member ${memberName} deleted successfully!`);
             fetchmembers();
         } catch (err: any) {

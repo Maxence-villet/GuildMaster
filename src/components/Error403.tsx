@@ -12,7 +12,7 @@ export default function Error403() {
       />
       <h1 className="text-5xl font-extrabold text-gray-900">403 Accès Refusé</h1>
       <p className="text-xl text-gray-700 mt-4 text-center">
-        Tentative d'accès non autorisé. Vous n'avez **pas la permission** de voir cette page.
+        Tentative d'accès non autorisé. Vous n'avez <strong>pas la permission</strong> de voir cette page.
       </p>
       <p className="text-md text-gray-500 mt-2 text-center">
         Cette ressource est réservée à un rôle d'utilisateur spécifique.

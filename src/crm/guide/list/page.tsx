@@ -7,6 +7,7 @@ import Pagination from "../../../components/Guides/Pagination";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../../context/AuthContext'; 
+import { useRoleGuard } from '../../../hooks/useRoleGuard';
 import axios from 'axios';
 
 interface Guide {
@@ -33,7 +34,7 @@ interface GuidesResponse {
 }
 
 export default function ListGuidePage() {
-
+    useRoleGuard();
     const { user } = useAuth();
     const [canAddGuide, setCanAddGuide] = useState(false);
 

@@ -76,6 +76,9 @@ export default function AddmemberPage() {
                 name: memberName, 
                 role: memberRole, 
                 clan_id: user.clan_id
+            },
+            {
+              headers: { "X-CSRF-Token": window._csrfToken! }
             });
             toast.success(`member ${memberName} added successfully!`);
             setmemberName('');

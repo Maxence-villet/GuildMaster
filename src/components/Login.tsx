@@ -20,7 +20,7 @@ interface FirstLoginResponse {
   code: string;
   clan_id: number;
   requires_password: boolean;
-  csrf: string;
+  csrf_token: string;
 }
 
 interface FullmemberResponse {
@@ -30,7 +30,7 @@ interface FullmemberResponse {
   role: string;
   clan_id: number;
   created_at: string;
-  csrf: string;
+  csrf_token: string;
 }
 
 interface Clan {
@@ -65,8 +65,9 @@ export default function Login() {
       const res = await axios.post<FirstLoginResponse>('http://127.0.0.1:8000/members/login', {
         code: code.trim(),
       });
-    const csrfToken = res.data.csrf;
-    window._csrfToken = csrfToken;
+    const csrfToken = res.data.csrf_token;
+    console.log("token",csrfToken)
+        window._csrfToken = csrfToken;
 
       const member = res.data;
       setCurrentmember(member);
@@ -118,7 +119,8 @@ export default function Login() {
         name: currentmember.name,
         password: codePassword,
       });
-      const csrfToken = res.data.csrf;
+      const csrfToken = res.data.csrf_token;
+      console.log("token",csrfToken)
       window._csrfToken = csrfToken;
 
       const member = res.data;
@@ -142,9 +144,9 @@ export default function Login() {
         name: name.trim(),
         password: loginPassword,
       });
-      const csrfToken = res.data.csrf;
+      const csrfToken = res.data.csrf_token;
       window._csrfToken = csrfToken;
-
+     console.log("token",csrfToken)
       const member = res.data;
       await completeLogin(member);
     } catch (err: any) {

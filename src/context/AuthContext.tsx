@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('user');
 
     await axios.post(
-        "https://guildmaster-backend-fastapi.onrender.com/logout",
+        "https://guildmaster-backend-fastapi.onrender.com/members/logout",
         {}, // body vide
         {
             headers: {

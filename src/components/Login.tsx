@@ -8,12 +8,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../context/AuthContext';
 
+declare global {
+  interface Window {
+    _csrfToken?: string;
+  }
+}
+
 interface FirstLoginResponse {
   id: number;
   name: string;
   code: string;
   clan_id: number;
   requires_password: boolean;
+  csrf: string;
 }
 
 interface FullmemberResponse {
@@ -23,6 +30,7 @@ interface FullmemberResponse {
   role: string;
   clan_id: number;
   created_at: string;
+  csrf: string;
 }
 
 interface Clan {
@@ -57,6 +65,8 @@ export default function Login() {
       const res = await axios.post<FirstLoginResponse>('http://127.0.0.1:8000/members/login', {
         code: code.trim(),
       });
+    const csrfToken = res.data.csrf;
+    window._csrfToken = csrfToken;
 
       const member = res.data;
       setCurrentmember(member);
@@ -108,6 +118,8 @@ export default function Login() {
         name: currentmember.name,
         password: codePassword,
       });
+      const csrfToken = res.data.csrf;
+      window._csrfToken = csrfToken;
 
       const member = res.data;
       await completeLogin(member);
@@ -130,6 +142,8 @@ export default function Login() {
         name: name.trim(),
         password: loginPassword,
       });
+      const csrfToken = res.data.csrf;
+      window._csrfToken = csrfToken;
 
       const member = res.data;
       await completeLogin(member);

@@ -55,26 +55,44 @@ export default function AddmemberPage() {
     }
   }, [members, memberRole]);
 
-  const handleAddmember = async () => {
-    if (!memberName.trim()) return toast.error("Nom requis");
-    setSubmitting(true);
-    try {
-      await axios.post(`http://127.0.0.1:8000/members/add`, {
-        name: memberName,
-        role: memberRole,
-        clan_id: user!.clan_id,
-      });
-      toast.success(`${memberName} ajouté !`);
-      setmemberName('');
-      fetchmembers();
-    } catch (err: any) {
-      toast.error(err.response?.data?.detail || "Erreur");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    const handleAddmember = async () => {
+        if (!user?.clan_id) {
+            toast.error('User clan not found.');
+            return;
+        }
 
-  if (!user || user.role !== "leader") return null;
+        if (!memberName.trim()) {
+            toast.error('member name cannot be empty.');
+            return;
+        }
+        if (!memberRole.trim()) {
+            toast.error('member role cannot be empty.');
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            await axios.post<member>(`http://127.0.0.1:8000/members/add`, { 
+                name: memberName, 
+                role: memberRole, 
+                clan_id: user.clan_id
+            });
+            toast.success(`member ${memberName} added successfully!`);
+            setmemberName('');
+            setmemberRole('member');
+            // Refresh the members list after adding
+            fetchmembers();
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                toast.error(`Error: ${error.response.data.message || 'Something went wrong.'}`);
+            } else {
+                toast.error('An unexpected error occurred.');
+            }
+            console.error('Error adding member:', error);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
   const availableRoles = getAvailableRoles(members);
 

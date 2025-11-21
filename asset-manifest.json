@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/GuildMaster/static/css/main.2a9a26f2.css",
-    "main.js": "/GuildMaster/static/js/main.5202833c.js",
+    "main.js": "/GuildMaster/static/js/main.63e05b75.js",
     "index.html": "/GuildMaster/index.html",
     "main.2a9a26f2.css.map": "/GuildMaster/static/css/main.2a9a26f2.css.map",
-    "main.5202833c.js.map": "/GuildMaster/static/js/main.5202833c.js.map"
+    "main.63e05b75.js.map": "/GuildMaster/static/js/main.63e05b75.js.map"
   },
   "entrypoints": [
     "static/css/main.2a9a26f2.css",
-    "static/js/main.5202833c.js"
+    "static/js/main.63e05b75.js"
   ]
 }

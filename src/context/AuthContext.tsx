@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     );
     // Optionnel : supprimer aussi le token en mémoire côté front
-    window._csrfToken = undefined;
+    
 };
 
 
